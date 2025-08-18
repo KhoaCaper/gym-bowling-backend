@@ -1,5 +1,5 @@
-# Multi-stage build for Spring Boot with JDK 21
-FROM openjdk:21-jdk-slim as builder
+# Multi-stage build for Spring Boot with JDK 17 (LTS)
+FROM eclipse-temurin:17-jdk-alpine as builder
 
 # Set working directory
 WORKDIR /app
@@ -21,13 +21,13 @@ COPY src src
 RUN ./gradlew build -x test
 
 # Runtime stage
-FROM openjdk:21-jre-slim
+FROM eclipse-temurin:17-jre-alpine
 
-# Install curl for health checks
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+# Install curl for health checks (Alpine uses apk)
+RUN apk add --no-cache curl
 
-# Create app user
-RUN groupadd -r appuser && useradd -r -g appuser appuser
+# Create app user (Alpine syntax)
+RUN addgroup -g 1001 -S appuser && adduser -S appuser -G appuser
 
 # Set working directory
 WORKDIR /app
