@@ -29,7 +29,8 @@ Thumbs.db
 *.log
 logs/
 
-# Application
+# Application (ignore real config with sensitive data)
+src/main/resources/application.properties
 application-local.properties
 application-prod.properties
 
