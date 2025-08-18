@@ -31,10 +31,10 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/users/**").permitAll() // Traditional auth
                 .requestMatchers("/api/payment/vnpay-return").permitAll()
                 .requestMatchers("/api/packages", "/api/packages/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**").permitAll()
-                .requestMatchers("/api/test/**").permitAll() // Test endpoints
                 .requestMatchers("/api/dev/**").permitAll()  // Dev endpoints
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/staff/**").hasAnyRole("STAFF", "ADMIN")

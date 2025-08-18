@@ -1,5 +1,5 @@
-# Multi-stage build for Spring Boot with JDK 24
-FROM openjdk:24-jdk-slim as builder
+# Multi-stage build for Spring Boot with JDK 21
+FROM openjdk:21-jdk-slim as builder
 
 # Set working directory
 WORKDIR /app
@@ -21,7 +21,7 @@ COPY src src
 RUN ./gradlew build -x test
 
 # Runtime stage
-FROM openjdk:24-jre-slim
+FROM openjdk:21-jre-slim
 
 # Install curl for health checks
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
