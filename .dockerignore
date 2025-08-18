@@ -1,0 +1,45 @@
+# Build artifacts
+build/
+target/
+*.jar
+*.war
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+docs/
+
+# Docker files
+Dockerfile
+docker-compose*.yml
+
+# Environment files
+.env
+.env.local
+
+# Logs
+*.log
+logs/
+
+# Test files
+src/test/
+
+# Gradle wrapper (keep gradlew but not gradle dir for caching)
+.gradle/
+
+# Firebase (will be mounted as volume)
+firebase-service-account.json
