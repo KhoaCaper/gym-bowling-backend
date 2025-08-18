@@ -3,6 +3,7 @@ package com.drugprevention.gymbowlingbackend.entity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -31,6 +32,9 @@ public class Order {
     
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     private Payment payment;
+    
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderPackage> orderPackages;
     
     public enum OrderStatus {
         PENDING, PAID, CANCELLED, COMPLETED
@@ -64,4 +68,7 @@ public class Order {
     
     public Payment getPayment() { return payment; }
     public void setPayment(Payment payment) { this.payment = payment; }
+    
+    public List<OrderPackage> getOrderPackages() { return orderPackages; }
+    public void setOrderPackages(List<OrderPackage> orderPackages) { this.orderPackages = orderPackages; }
 }

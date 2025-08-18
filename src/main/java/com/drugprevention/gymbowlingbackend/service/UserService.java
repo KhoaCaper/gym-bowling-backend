@@ -23,18 +23,17 @@ public class UserService {
         this.firebaseAuth = firebaseAuth;
     }
 
-    public User createOrUpdateUser(String firebaseUid, String username, String email, String fullName, String phone) {
+    public User createOrUpdateUser(String firebaseUid, String email, String fullName, String phone) {
         Optional<User> existingUser = userRepository.findByFirebaseUid(firebaseUid);
         
         if (existingUser.isPresent()) {
             User user = existingUser.get();
-            if (username != null) user.setUsername(username);
             user.setEmail(email);
             user.setFullName(fullName);
             user.setPhone(phone);
             return userRepository.save(user);
         } else {
-            User newUser = new User(firebaseUid, username, email, fullName, phone);
+            User newUser = new User(firebaseUid, email, fullName, phone);
             // Set default role as USER
             Role userRole = roleRepository.findByName("USER")
                 .orElseThrow(() -> new RuntimeException("Default USER role not found"));
@@ -58,15 +57,16 @@ public class UserService {
 
     public User verifyAndGetUser(String token) {
         try {
+            if (firebaseAuth == null) {
+                throw new RuntimeException("Firebase not initialized");
+            }
+            
             FirebaseToken decodedToken = firebaseAuth.verifyIdToken(token);
             String firebaseUid = decodedToken.getUid();
             String email = decodedToken.getEmail();
             String name = decodedToken.getName();
             
-            // Generate username from email if not exists
-            String username = email != null ? email.split("@")[0] : "user_" + System.currentTimeMillis();
-            
-            return createOrUpdateUser(firebaseUid, username, email, name, null);
+            return createOrUpdateUser(firebaseUid, email, name, null);
         } catch (Exception e) {
             throw new RuntimeException("Invalid Firebase token", e);
         }

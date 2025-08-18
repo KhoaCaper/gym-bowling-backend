@@ -52,12 +52,9 @@ public class UserController {
                 return ResponseEntity.badRequest().body(Map.of("error", "Passwords do not match"));
             }
 
-            // Check if username or email already exists
+            // Check if email already exists
             if (userRepository.existsByEmail(email)) {
                 return ResponseEntity.badRequest().body(Map.of("error", "Email already exists"));
-            }
-            if (userRepository.existsByUsername(username)) {
-                return ResponseEntity.badRequest().body(Map.of("error", "Username already exists"));
             }
 
             // Create Firebase user
@@ -70,7 +67,7 @@ public class UserController {
             UserRecord firebaseUser = firebaseAuth.createUser(firebaseRequest);
 
             // Create user in our database
-            User user = new User(firebaseUser.getUid(), username, email, fullName, phone);
+            User user = new User(firebaseUser.getUid(), email, fullName, phone);
             
             // Set default role
             Role userRole = roleRepository.findByName("USER")
@@ -83,7 +80,6 @@ public class UserController {
                 "message", "User registered successfully",
                 "user", Map.of(
                     "id", user.getId(),
-                    "username", user.getUsername(),
                     "email", user.getEmail(),
                     "fullName", user.getFullName(),
                     "role", user.getRole().getName()
@@ -107,11 +103,8 @@ public class UserController {
                     .body(Map.of("error", "Username/Email and password are required"));
             }
 
-            // Find user by username or email
+            // Find user by email
             Optional<User> userOpt = userRepository.findByEmail(usernameOrEmail);
-            if (userOpt.isEmpty()) {
-                userOpt = userRepository.findByUsername(usernameOrEmail);
-            }
             
             if (userOpt.isEmpty()) {
                 return ResponseEntity.badRequest()
@@ -128,7 +121,6 @@ public class UserController {
                 "customToken", customToken,
                 "user", Map.of(
                     "id", user.getId(),
-                    "username", user.getUsername(),
                     "email", user.getEmail(),
                     "fullName", user.getFullName(),
                     "role", user.getRole().getName()
