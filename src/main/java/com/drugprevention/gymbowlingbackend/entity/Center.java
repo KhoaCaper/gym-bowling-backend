@@ -29,12 +29,6 @@ public class Center {
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
     
-    @OneToMany(mappedBy = "center", cascade = CascadeType.ALL)
-    private List<Service> services;
-    
-    @OneToMany(mappedBy = "center", cascade = CascadeType.ALL)
-    private List<TimeFrame> timeFrames;
-    
     // Constructors
     public Center() {}
     
@@ -66,10 +60,4 @@ public class Center {
     
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-    
-    public List<Service> getServices() { return services; }
-    public void setServices(List<Service> services) { this.services = services; }
-    
-    public List<TimeFrame> getTimeFrames() { return timeFrames; }
-    public void setTimeFrames(List<TimeFrame> timeFrames) { this.timeFrames = timeFrames; }
 }
