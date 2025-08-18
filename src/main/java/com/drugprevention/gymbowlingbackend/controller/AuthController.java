@@ -30,6 +30,7 @@ public class AuthController {
                 user.setPhone(phone);
                 user = userService.createOrUpdateUser(
                     user.getFirebaseUid(), 
+                    user.getUsername(),
                     user.getEmail(), 
                     user.getFullName(), 
                     phone
@@ -40,6 +41,7 @@ public class AuthController {
                 "message", "Login successful with " + (user.getEmail().contains("gmail") ? "Gmail" : "Email"),
                 "user", Map.of(
                     "id", user.getId(),
+                    "username", user.getUsername(),
                     "email", user.getEmail(),
                     "fullName", user.getFullName(),
                     "phone", user.getPhone() != null ? user.getPhone() : "",
@@ -66,6 +68,7 @@ public class AuthController {
                 user.setPhone(phone);
                 user = userService.createOrUpdateUser(
                     user.getFirebaseUid(), 
+                    user.getUsername(),
                     user.getEmail(), 
                     user.getFullName(), 
                     phone
@@ -98,6 +101,7 @@ public class AuthController {
             return ResponseEntity.ok(Map.of(
                 "user", Map.of(
                     "id", user.getId(),
+                    "username", user.getUsername(),
                     "email", user.getEmail(),
                     "fullName", user.getFullName(),
                     "phone", user.getPhone() != null ? user.getPhone() : "",

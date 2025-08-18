@@ -16,6 +16,9 @@ public class User {
     private String firebaseUid;
     
     @Column(unique = true, nullable = false)
+    private String username;
+    
+    @Column(unique = true, nullable = false)
     private String email;
     
     @Column(nullable = false)
@@ -38,8 +41,9 @@ public class User {
     // Constructors
     public User() {}
     
-    public User(String firebaseUid, String email, String fullName, String phone) {
+    public User(String firebaseUid, String username, String email, String fullName, String phone) {
         this.firebaseUid = firebaseUid;
+        this.username = username;
         this.email = email;
         this.fullName = fullName;
         this.phone = phone;
@@ -51,6 +55,9 @@ public class User {
     
     public String getFirebaseUid() { return firebaseUid; }
     public void setFirebaseUid(String firebaseUid) { this.firebaseUid = firebaseUid; }
+    
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
     
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }

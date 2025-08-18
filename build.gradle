@@ -27,6 +27,9 @@ dependencies {
     // SQL Server
     runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
     
+    // PostgreSQL (for Railway deployment)
+    runtimeOnly 'org.postgresql:postgresql'
+    
     // Firebase Admin SDK
     implementation 'com.google.firebase:firebase-admin:9.2.0'
     
