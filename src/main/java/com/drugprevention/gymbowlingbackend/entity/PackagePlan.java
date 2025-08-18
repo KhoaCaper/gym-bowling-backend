@@ -1,6 +1,7 @@
 package com.drugprevention.gymbowlingbackend.entity;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,9 +32,11 @@ public class PackagePlan {
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
     
+    @JsonIgnore
     @OneToMany(mappedBy = "packagePlan", cascade = CascadeType.ALL)
     private List<PackagePlanDetail> packagePlanDetails;
     
+    @JsonIgnore
     @OneToMany(mappedBy = "packagePlan", cascade = CascadeType.ALL)
     private List<OrderPackage> orderPackages;
     

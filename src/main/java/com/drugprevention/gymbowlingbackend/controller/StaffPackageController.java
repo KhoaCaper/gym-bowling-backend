@@ -1,7 +1,11 @@
 package com.drugprevention.gymbowlingbackend.controller;
 
+import com.drugprevention.gymbowlingbackend.dto.PackagePlanDTO;
+import com.drugprevention.gymbowlingbackend.dto.CreatePackageDTO;
 import com.drugprevention.gymbowlingbackend.entity.PackagePlan;
 import com.drugprevention.gymbowlingbackend.service.PackagePlanService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,6 +14,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/staff/packages")
+@Tag(name = "Staff Package Management", description = "APIs for staff to manage packages")
 public class StaffPackageController {
 
     private final PackagePlanService packagePlanService;
@@ -19,8 +24,9 @@ public class StaffPackageController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PackagePlan>> getAllPackages() {
-        List<PackagePlan> packages = packagePlanService.getAllPackages();
+    @Operation(summary = "Get all packages", description = "Get all packages including inactive ones")
+    public ResponseEntity<List<PackagePlanDTO>> getAllPackages() {
+        List<PackagePlanDTO> packages = packagePlanService.getAllPackages();
         return ResponseEntity.ok(packages);
     }
 

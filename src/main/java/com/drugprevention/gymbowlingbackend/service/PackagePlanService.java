@@ -1,11 +1,14 @@
 package com.drugprevention.gymbowlingbackend.service;
 
+import com.drugprevention.gymbowlingbackend.dto.PackagePlanDTO;
+import com.drugprevention.gymbowlingbackend.dto.CreatePackageDTO;
 import com.drugprevention.gymbowlingbackend.entity.PackagePlan;
 import com.drugprevention.gymbowlingbackend.repository.PackagePlanRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PackagePlanService {
@@ -16,16 +19,36 @@ public class PackagePlanService {
         this.packagePlanRepository = packagePlanRepository;
     }
 
-    public List<PackagePlan> getAllActivePackages() {
-        return packagePlanRepository.findByIsActiveTrueOrderByPriceAsc();
+    public List<PackagePlanDTO> getAllActivePackages() {
+        return packagePlanRepository.findByIsActiveTrueOrderByPriceAsc()
+            .stream()
+            .distinct()  // Remove duplicates if any
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
     }
 
-    public List<PackagePlan> getAllPackages() {
-        return packagePlanRepository.findAll();
+    public List<PackagePlanDTO> getAllPackages() {
+        return packagePlanRepository.findAll()
+            .stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
     }
 
-    public Optional<PackagePlan> getPackageById(Long id) {
-        return packagePlanRepository.findById(id);
+    public Optional<PackagePlanDTO> getPackageById(Long id) {
+        return packagePlanRepository.findById(id)
+            .map(this::convertToDTO);
+    }
+    
+    private PackagePlanDTO convertToDTO(PackagePlan packagePlan) {
+        return new PackagePlanDTO(
+            packagePlan.getId(),
+            packagePlan.getName(),
+            packagePlan.getDescription(),
+            packagePlan.getPrice(),
+            packagePlan.getDurationMonths(),
+            packagePlan.getIsActive(),
+            packagePlan.getCreatedAt()
+        );
     }
 
     public PackagePlan createPackage(PackagePlan packagePlan) {
