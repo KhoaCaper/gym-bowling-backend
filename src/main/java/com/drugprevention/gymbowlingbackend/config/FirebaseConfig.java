@@ -61,6 +61,11 @@ public class FirebaseConfig {
 
     @Bean
     public FirebaseAuth firebaseAuth() {
-        return FirebaseAuth.getInstance();
+        try {
+            return FirebaseAuth.getInstance();
+        } catch (Exception e) {
+            System.err.println("Firebase not initialized, returning null FirebaseAuth");
+            return null;
+        }
     }
 }
