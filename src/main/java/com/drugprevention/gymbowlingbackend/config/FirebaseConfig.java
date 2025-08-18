@@ -10,27 +10,49 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
 import javax.annotation.PostConstruct;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 @Configuration
 public class FirebaseConfig {
 
-    @Value("${firebase.config.file}")
+    @Value("${firebase.config.file:}")
     private String firebaseConfigFile;
+    
+    @Value("${GOOGLE_APPLICATION_CREDENTIALS_JSON:}")
+    private String firebaseCredentialsJson;
 
     @PostConstruct
     public void initialize() {
         try {
-            InputStream serviceAccount = new ClassPathResource(firebaseConfigFile).getInputStream();
+            GoogleCredentials credentials = null;
             
-            FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                    .build();
-
-            if (FirebaseApp.getApps().isEmpty()) {
-                FirebaseApp.initializeApp(options);
+            // Try to use JSON from environment variable first (for Railway/cloud deployment)
+            if (firebaseCredentialsJson != null && !firebaseCredentialsJson.trim().isEmpty()) {
+                InputStream credentialsStream = new ByteArrayInputStream(firebaseCredentialsJson.getBytes());
+                credentials = GoogleCredentials.fromStream(credentialsStream);
+                System.out.println("Firebase initialized from environment variable");
             }
+            // Fallback to file (for local development)
+            else if (firebaseConfigFile != null && !firebaseConfigFile.trim().isEmpty()) {
+                InputStream serviceAccount = new ClassPathResource(firebaseConfigFile).getInputStream();
+                credentials = GoogleCredentials.fromStream(serviceAccount);
+                System.out.println("Firebase initialized from config file: " + firebaseConfigFile);
+            }
+            
+            if (credentials != null) {
+                FirebaseOptions options = FirebaseOptions.builder()
+                        .setCredentials(credentials)
+                        .build();
+
+                if (FirebaseApp.getApps().isEmpty()) {
+                    FirebaseApp.initializeApp(options);
+                }
+            } else {
+                System.out.println("No Firebase credentials found. Skipping Firebase initialization.");
+            }
+            
         } catch (IOException e) {
             System.err.println("Failed to initialize Firebase: " + e.getMessage());
             // For development, continue without Firebase if config file not found
