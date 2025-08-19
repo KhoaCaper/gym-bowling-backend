@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.drugprevention.gymbowlingbackend.entity.Center;
 
 @Entity
 @Table(name = "package_plans")
@@ -32,6 +33,10 @@ public class PackagePlan {
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
     
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "center_id", nullable = false)
+    private Center center;
+    
     @JsonIgnore
     @OneToMany(mappedBy = "packagePlan", cascade = CascadeType.ALL)
     private List<PackagePlanDetail> packagePlanDetails;
@@ -43,11 +48,12 @@ public class PackagePlan {
     // Constructors
     public PackagePlan() {}
     
-    public PackagePlan(String name, String description, BigDecimal price, Integer durationMonths) {
+    public PackagePlan(String name, String description, BigDecimal price, Integer durationMonths, Center center) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.durationMonths = durationMonths;
+        this.center = center;
     }
     
     // Getters and Setters
@@ -77,4 +83,7 @@ public class PackagePlan {
     
     public List<OrderPackage> getOrderPackages() { return orderPackages; }
     public void setOrderPackages(List<OrderPackage> orderPackages) { this.orderPackages = orderPackages; }
+    
+    public Center getCenter() { return center; }
+    public void setCenter(Center center) { this.center = center; }
 }

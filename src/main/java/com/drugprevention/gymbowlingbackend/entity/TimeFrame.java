@@ -32,6 +32,9 @@ public class TimeFrame {
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
     
+    @Column
+    private LocalDateTime updatedAt;
+    
     public enum DayOfWeek {
         MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
     }
@@ -67,4 +70,7 @@ public class TimeFrame {
     
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }

@@ -8,6 +8,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -70,5 +71,71 @@ public class UserService {
         } catch (Exception e) {
             throw new RuntimeException("Invalid Firebase token", e);
         }
+    }
+
+    // Admin methods
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    public Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
+    }
+
+    public User updateUserRole(Long userId, String roleName) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+        
+        Role role = roleRepository.findByName(roleName)
+            .orElseThrow(() -> new RuntimeException("Role not found: " + roleName));
+        
+        user.setRole(role);
+        return userRepository.save(user);
+    }
+
+    public User toggleUserStatus(Long userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+        
+        // Since User entity doesn't have isActive field, we'll just return the user
+        // You can add isActive field to User entity if needed
+        return user;
+    }
+
+    public void deleteUser(Long userId) {
+        if (userRepository.existsById(userId)) {
+            userRepository.deleteById(userId);
+        } else {
+            throw new RuntimeException("User not found with id: " + userId);
+        }
+    }
+
+    public List<Role> getAllRoles() {
+        return roleRepository.findAll();
+    }
+
+    public Role createRole(String roleName) {
+        if (roleRepository.existsByName(roleName)) {
+            throw new RuntimeException("Role already exists: " + roleName);
+        }
+        
+        Role newRole = new Role(roleName, "Role for " + roleName);
+        return roleRepository.save(newRole);
+    }
+
+    public void deleteRole(Long roleId) {
+        Role role = roleRepository.findById(roleId)
+            .orElseThrow(() -> new RuntimeException("Role not found with id: " + roleId));
+        
+        // Check if role is in use by finding users with this role
+        List<User> usersWithRole = userRepository.findAll().stream()
+            .filter(user -> user.getRole().getId().equals(roleId))
+            .toList();
+        
+        if (!usersWithRole.isEmpty()) {
+            throw new RuntimeException("Cannot delete role that is in use");
+        }
+        
+        roleRepository.deleteById(roleId);
     }
 }

@@ -8,10 +8,7 @@ import java.util.List;
 
 @Repository
 public interface CenterRepository extends JpaRepository<Center, Long> {
-    
     List<Center> findByIsActiveTrue();
-    
-    List<Center> findByNameContainingIgnoreCase(String name);
-    
-    List<Center> findByIsActiveTrueAndNameContainingIgnoreCase(String name);
+    List<Center> findByIsActiveTrueOrderByNameAsc();
+    boolean existsByName(String name);
 }

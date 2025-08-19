@@ -47,7 +47,9 @@ public class PackagePlanService {
             packagePlan.getPrice(),
             packagePlan.getDurationMonths(),
             packagePlan.getIsActive(),
-            packagePlan.getCreatedAt()
+            packagePlan.getCreatedAt(),
+            packagePlan.getCenter() != null ? packagePlan.getCenter().getId() : null,
+            packagePlan.getCenter() != null ? packagePlan.getCenter().getName() : null
         );
     }
 

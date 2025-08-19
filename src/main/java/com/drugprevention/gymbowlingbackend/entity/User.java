@@ -28,12 +28,16 @@ public class User {
     private Role role;
     
     @Column(nullable = false)
+    private Boolean isActive = true;
+    
+    @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
+    
+    @Column
+    private LocalDateTime updatedAt;
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Order> orders;
-    
-    // Role enum removed - now using Role entity
     
     // Constructors
     public User() {}
@@ -64,8 +68,14 @@ public class User {
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
     
+    public Boolean getIsActive() { return isActive; }
+    public void setIsActive(Boolean isActive) { this.isActive = isActive; }
+    
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
     
     public List<Order> getOrders() { return orders; }
     public void setOrders(List<Order> orders) { this.orders = orders; }

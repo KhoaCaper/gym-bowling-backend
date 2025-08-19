@@ -1,17 +1,15 @@
-# Build artifacts
-build/
-target/
-*.jar
-*.war
+# Gradle
+.gradle/
+gradle/
+gradlew
+gradlew.bat
 
-# IDE files
+# IDE
 .idea/
-.vscode/
 *.iml
-*.ipr
-*.iws
+.vscode/
 
-# OS files
+# OS
 .DS_Store
 Thumbs.db
 
@@ -19,27 +17,21 @@ Thumbs.db
 .git/
 .gitignore
 
-# Documentation
-*.md
-docs/
-
-# Docker files
-Dockerfile
-docker-compose*.yml
-
-# Environment files
-.env
-.env.local
-
 # Logs
 *.log
-logs/
 
-# Test files
-src/test/
+# Build artifacts
+build/
+!build/libs/*.jar
 
-# Gradle wrapper (keep gradlew but not gradle dir for caching)
-.gradle/
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
 
-# Firebase (will be mounted as volume)
-firebase-service-account.json
+# Database
+database_script.sql
+
+# Documentation
+README.md
+*.md

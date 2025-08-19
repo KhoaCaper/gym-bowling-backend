@@ -2,16 +2,20 @@ package com.drugprevention.gymbowlingbackend.controller;
 
 import com.drugprevention.gymbowlingbackend.entity.Order;
 import com.drugprevention.gymbowlingbackend.entity.Payment;
+import com.drugprevention.gymbowlingbackend.entity.User;
 import com.drugprevention.gymbowlingbackend.repository.PaymentRepository;
 import com.drugprevention.gymbowlingbackend.service.OrderService;
 import com.drugprevention.gymbowlingbackend.service.UserService;
 import com.drugprevention.gymbowlingbackend.service.VNPayService;
+import com.drugprevention.gymbowlingbackend.dto.OrderItemDTO;
+import com.drugprevention.gymbowlingbackend.dto.OrderDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/payment")
@@ -39,7 +43,14 @@ public class PaymentController {
             String firebaseUid = (String) authentication.getPrincipal();
             Long packagePlanId = request.get("packagePlanId");
 
-            Order order = orderService.createOrder(firebaseUid, packagePlanId);
+            // Get user by firebaseUid first
+            User user = userService.getCurrentUser(firebaseUid);
+            
+            // Create order item
+            OrderItemDTO orderItem = new OrderItemDTO(packagePlanId, 1);
+            List<OrderItemDTO> orderItems = List.of(orderItem);
+            
+            OrderDTO order = orderService.createOrder(user.getId(), orderItems);
             
             String orderInfo = "Payment for order #" + order.getId();
             String paymentUrl = vnPayService.createPaymentUrl(
@@ -74,8 +85,12 @@ public class PaymentController {
             String responseCode = params.get("vnp_ResponseCode");
             String transactionId = params.get("vnp_TransactionNo");
 
-            Order order = orderService.getOrderById(Long.parseLong(orderId))
+            OrderDTO orderDTO = orderService.getOrderById(Long.parseLong(orderId))
                 .orElseThrow(() -> new RuntimeException("Order not found"));
+            
+            // Get the actual Order entity for payment processing
+            Order order = orderService.getOrderEntityById(Long.parseLong(orderId))
+                .orElseThrow(() -> new RuntimeException("Order entity not found"));
 
             Payment payment = order.getPayment();
             payment.setTransactionId(transactionId);
@@ -84,7 +99,7 @@ public class PaymentController {
             if ("00".equals(responseCode)) {
                 // Payment successful
                 payment.setStatus(Payment.PaymentStatus.SUCCESS);
-                orderService.updateOrderStatus(order.getId(), Order.OrderStatus.PAID);
+                orderService.updateOrderStatus(order.getId(), Order.OrderStatus.PAID.toString());
                 
                 paymentRepository.save(payment);
 
@@ -96,7 +111,7 @@ public class PaymentController {
             } else {
                 // Payment failed
                 payment.setStatus(Payment.PaymentStatus.FAILED);
-                orderService.updateOrderStatus(order.getId(), Order.OrderStatus.CANCELLED);
+                orderService.updateOrderStatus(order.getId(), Order.OrderStatus.CANCELLED.toString());
                 
                 paymentRepository.save(payment);
 
@@ -116,7 +131,8 @@ public class PaymentController {
     public ResponseEntity<?> getUserOrders(Authentication authentication) {
         try {
             String firebaseUid = (String) authentication.getPrincipal();
-            var orders = orderService.getUserOrders(firebaseUid);
+            User user = userService.getCurrentUser(firebaseUid);
+            var orders = orderService.getOrdersByUser(user.getId());
             
             return ResponseEntity.ok(Map.of("orders", orders));
         } catch (Exception e) {

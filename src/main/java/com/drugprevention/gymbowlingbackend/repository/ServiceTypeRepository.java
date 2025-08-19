@@ -5,11 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ServiceTypeRepository extends JpaRepository<ServiceType, Long> {
-    
-    List<ServiceType> findByNameContainingIgnoreCase(String name);
-    
-    ServiceType findByName(String name);
+    List<ServiceType> findByIsActiveTrue();
+    Optional<ServiceType> findByName(String name);
+    boolean existsByName(String name);
 }

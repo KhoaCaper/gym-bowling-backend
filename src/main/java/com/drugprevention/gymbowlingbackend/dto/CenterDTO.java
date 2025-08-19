@@ -1,49 +1,48 @@
-package com.drugprevention.gymbowlingbackend.entity;
+package com.drugprevention.gymbowlingbackend.dto;
 
-import jakarta.persistence.*;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "centers")
-public class Center {
+@Schema(description = "Center information")
+public class CenterDTO {
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "Center ID", example = "1")
     private Long id;
     
-    @Column(nullable = false)
+    @Schema(description = "Center name", example = "GymBo Center 1")
     private String name;
     
-    @Column(length = 500)
+    @Schema(description = "Center address", example = "123 Đường ABC, Quận 1, TP.HCM")
     private String address;
     
-    @Column(length = 20)
+    @Schema(description = "Center phone", example = "0901234567")
     private String phone;
     
-    @Column(length = 255)
+    @Schema(description = "Center email", example = "center@gymbo.com")
     private String email;
     
-    @Column(columnDefinition = "TEXT")
+    @Schema(description = "Center description", example = "Trung tâm gym và bowling hiện đại")
     private String description;
     
-    @Column(nullable = false)
-    private Boolean isActive = true;
+    @Schema(description = "Is center active", example = "true")
+    private Boolean isActive;
     
-    @Column(nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
-    
-    @Column
-    private LocalDateTime updatedAt;
+    @Schema(description = "Center creation date")
+    private LocalDateTime createdAt;
     
     // Constructors
-    public Center() {}
+    public CenterDTO() {}
     
-    public Center(String name, String address, String phone, String email, String description) {
+    public CenterDTO(Long id, String name, String address, String phone, String email, String description, 
+                    Boolean isActive, LocalDateTime createdAt) {
+        this.id = id;
         this.name = name;
         this.address = address;
         this.phone = phone;
         this.email = email;
         this.description = description;
+        this.isActive = isActive;
+        this.createdAt = createdAt;
     }
     
     // Getters and Setters
@@ -70,7 +69,4 @@ public class Center {
     
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-    
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }

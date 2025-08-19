@@ -4,7 +4,7 @@ services:
   # SQL Server Database
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: gym-bowling-db
+    container_name: gym_bowling_db
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=YourStrong@Passw0rd
@@ -13,43 +13,33 @@ services:
       - "1433:1433"
     volumes:
       - sqlserver_data:/var/opt/mssql
-      - ./database-setup.sql:/docker-entrypoint-initdb.d/database-setup.sql
+      - ./database_script.sql:/docker-entrypoint-initdb.d/database_script.sql
     networks:
-      - gym-bowling-network
-    restart: unless-stopped
+      - gym_bowling_network
 
   # Spring Boot Application
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: gym-bowling-app
+    build: .
+    container_name: gym_bowling_app
+    ports:
+      - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
       - SPRING_DATASOURCE_URL=jdbc:sqlserver://sqlserver:1433;databaseName=gym_bowling;encrypt=true;trustServerCertificate=true
       - SPRING_DATASOURCE_USERNAME=sa
       - SPRING_DATASOURCE_PASSWORD=YourStrong@Passw0rd
-    ports:
-      - "8080:8080"
-    volumes:
-      # Mount Firebase service account key
-      - ./firebase-service-account.json:/app/config/firebase-service-account.json:ro
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.microsoft.sqlserver.jdbc.SQLServerDriver
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=validate
+      - SPRING_JPA_SHOW_SQL=true
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.SQLServerDialect
     depends_on:
       - sqlserver
     networks:
-      - gym-bowling-network
+      - gym_bowling_network
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/api/packages"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
 
 volumes:
   sqlserver_data:
-    driver: local
 
 networks:
-  gym-bowling-network:
+  gym_bowling_network:
     driver: bridge

@@ -33,11 +33,15 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/users/**").permitAll() // Traditional auth
                 .requestMatchers("/api/payment/vnpay-return").permitAll()
-                .requestMatchers("/api/packages", "/api/packages/**").permitAll()
+                .requestMatchers("/api/package-plans", "/api/package-plans/**").permitAll()
+                .requestMatchers("/api/centers", "/api/centers/**").permitAll() // Public center info
+                .requestMatchers("/api/timeframes", "/api/timeframes/**").permitAll() // Public timeframe info
+                .requestMatchers("/api/service-types", "/api/service-types/**").permitAll() // Public service type info
                 .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**").permitAll()
                 .requestMatchers("/api/dev/**").permitAll()  // Dev endpoints
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/staff/**").hasAnyRole("STAFF", "ADMIN")
+                .requestMatchers("/api/orders/**").hasAnyRole("USER", "STAFF", "ADMIN") // Users can manage their own orders
                 .anyRequest().authenticated()
             )
             .addFilterBefore(firebaseAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

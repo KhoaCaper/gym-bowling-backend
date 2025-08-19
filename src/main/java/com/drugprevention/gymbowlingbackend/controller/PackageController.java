@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/packages")
+@RequestMapping("/api/package-plans")
 @Tag(name = "Package Management", description = "APIs for managing gym/bowling packages")
 public class PackageController {
 

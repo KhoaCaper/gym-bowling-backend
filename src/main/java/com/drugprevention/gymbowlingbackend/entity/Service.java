@@ -27,8 +27,8 @@ public class Service {
     @Column(columnDefinition = "TEXT")
     private String description;
     
-    @Column(precision = 10, scale = 2)
-    private BigDecimal hourlyRate;
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal price;
     
     @Column(nullable = false)
     private Boolean isActive = true;
@@ -36,18 +36,21 @@ public class Service {
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
     
+    @Column
+    private LocalDateTime updatedAt;
+    
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL)
     private List<PackagePlanDetail> packagePlanDetails;
     
     // Constructors
     public Service() {}
     
-    public Service(ServiceType serviceType, Center center, String name, String description, BigDecimal hourlyRate) {
+    public Service(ServiceType serviceType, Center center, String name, String description, BigDecimal price) {
         this.serviceType = serviceType;
         this.center = center;
         this.name = name;
         this.description = description;
-        this.hourlyRate = hourlyRate;
+        this.price = price;
     }
     
     // Getters and Setters
@@ -66,14 +69,17 @@ public class Service {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
     
-    public BigDecimal getHourlyRate() { return hourlyRate; }
-    public void setHourlyRate(BigDecimal hourlyRate) { this.hourlyRate = hourlyRate; }
+    public BigDecimal getPrice() { return price; }
+    public void setPrice(BigDecimal price) { this.price = price; }
     
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
     
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
     
     public List<PackagePlanDetail> getPackagePlanDetails() { return packagePlanDetails; }
     public void setPackagePlanDetails(List<PackagePlanDetail> packagePlanDetails) { this.packagePlanDetails = packagePlanDetails; }
