@@ -1,70 +1,116 @@
 package com.drugprevention.gymbowlingbackend.controller;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.UserRecord;
+import com.drugprevention.gymbowlingbackend.entity.User;
+import com.drugprevention.gymbowlingbackend.entity.Role;
+import com.drugprevention.gymbowlingbackend.service.UserService;
+import com.drugprevention.gymbowlingbackend.repository.RoleRepository;
+import com.drugprevention.gymbowlingbackend.repository.UserRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/dev")
+@Tag(name = "Development", description = "Development endpoints for testing")
 public class DevController {
 
-    private final FirebaseAuth firebaseAuth;
+    private final UserService userService;
+    private final RoleRepository roleRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public DevController(FirebaseAuth firebaseAuth) {
-        this.firebaseAuth = firebaseAuth;
+    public DevController(UserService userService, RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userService = userService;
+        this.roleRepository = roleRepository;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    @PostMapping("/create-custom-token")
-    public ResponseEntity<?> createCustomToken(@RequestBody Map<String, String> request) {
+    @PostMapping("/create-test-accounts")
+    @Operation(summary = "Create test accounts", description = "Create test accounts for development")
+    public ResponseEntity<Map<String, String>> createTestAccounts() {
         try {
-            String uid = request.getOrDefault("uid", "admin-firebase-uid");
-            
-            // Create custom token for testing
-            String customToken = firebaseAuth.createCustomToken(uid);
-            
+            // Get roles
+            Role adminRole = roleRepository.findByName("ADMIN")
+                .orElseThrow(() -> new RuntimeException("ADMIN role not found"));
+            Role staffRole = roleRepository.findByName("STAFF")
+                .orElseThrow(() -> new RuntimeException("STAFF role not found"));
+            Role userRole = roleRepository.findByName("USER")
+                .orElseThrow(() -> new RuntimeException("USER role not found"));
+
+            // Delete existing test accounts if they exist
+            userRepository.findByUsername("addmin").ifPresent(userRepository::delete);
+            userRepository.findByUsername("stab").ifPresent(userRepository::delete);
+            userRepository.findByUsername("khoa").ifPresent(userRepository::delete);
+
+            // Create ADMIN account - with encoded password
+            if (!userRepository.existsByUsername("addmin")) {
+                String encodedPassword = passwordEncoder.encode("addmini");
+                String fakeFirebaseUid = "traditional_admin_" + System.currentTimeMillis();
+                User adminUser = new User("addmin", encodedPassword, fakeFirebaseUid, "addmin@gymbowling.com", "Admin User", "0901234567");
+                adminUser.setRole(adminRole);
+                adminUser.setIsActive(true);
+                adminUser.setCreatedAt(java.time.LocalDateTime.now());
+                adminUser.setUpdatedAt(java.time.LocalDateTime.now());
+                userRepository.save(adminUser);
+            }
+
+            // Create STAFF account - with encoded password
+            if (!userRepository.existsByUsername("stab")) {
+                String encodedPassword = passwordEncoder.encode("123456");
+                String fakeFirebaseUid = "traditional_staff_" + System.currentTimeMillis();
+                User staffUser = new User("stab", encodedPassword, fakeFirebaseUid, "stab@gymbowling.com", "Staff User", "0901234568");
+                staffUser.setRole(staffRole);
+                staffUser.setIsActive(true);
+                staffUser.setCreatedAt(java.time.LocalDateTime.now());
+                staffUser.setUpdatedAt(java.time.LocalDateTime.now());
+                userRepository.save(staffUser);
+            }
+
+            // Create USER account - with encoded password
+            if (!userRepository.existsByUsername("khoa")) {
+                String encodedPassword = passwordEncoder.encode("123456");
+                String fakeFirebaseUid = "traditional_user_" + System.currentTimeMillis();
+                User normalUser = new User("khoa", encodedPassword, fakeFirebaseUid, "khoa@gymbowling.com", "Khoa User", "0901234569");
+                normalUser.setRole(userRole);
+                normalUser.setIsActive(true);
+                normalUser.setCreatedAt(java.time.LocalDateTime.now());
+                normalUser.setUpdatedAt(java.time.LocalDateTime.now());
+                userRepository.save(normalUser);
+            }
+
             return ResponseEntity.ok(Map.of(
-                "customToken", customToken,
-                "message", "Use this token to get ID token from Firebase",
-                "instructions", Map.of(
-                    "step1", "Use Firebase signInWithCustomToken(customToken)",
-                    "step2", "Then call getIdToken() to get the ID token",
-                    "step3", "Use ID token in Swagger Authorization"
-                )
+                "message", "Test accounts created successfully",
+                "admin", "addmin/addmini",
+                "staff", "stab/123456", 
+                "user", "khoa/123456"
             ));
-            
-        } catch (FirebaseAuthException e) {
+
+        } catch (Exception e) {
             return ResponseEntity.badRequest()
-                .body(Map.of("error", "Failed to create custom token: " + e.getMessage()));
+                .body(Map.of("error", "Failed to create test accounts: " + e.getMessage()));
         }
     }
 
-    @GetMapping("/firebase-users")
-    public ResponseEntity<?> listFirebaseUsers() {
+    @GetMapping("/test-accounts")
+    @Operation(summary = "List test accounts", description = "List all test accounts")
+    public ResponseEntity<Map<String, Object>> listTestAccounts() {
         try {
-            // List first 10 users for testing
-            var listUsersResult = firebaseAuth.listUsers(null, 10);
-            
-            java.util.List<Map<String, String>> usersList = new java.util.ArrayList<>();
-            for (var user : listUsersResult.getValues()) {
-                usersList.add(Map.of(
-                    "uid", user.getUid(),
-                    "email", user.getEmail() != null ? user.getEmail() : "no-email",
-                    "displayName", user.getDisplayName() != null ? user.getDisplayName() : "no-name"
-                ));
-            }
-            
             return ResponseEntity.ok(Map.of(
-                "users", usersList,
-                "message", "Firebase users list"
+                "test_accounts", Map.of(
+                    "admin", Map.of("username", "addmin", "password", "addmini", "role", "ADMIN"),
+                    "staff", Map.of("username", "stab", "password", "123456", "role", "STAFF"),
+                    "user", Map.of("username", "khoa", "password", "123456", "role", "USER")
+                ),
+                "note", "Use these accounts to test different roles"
             ));
-            
-        } catch (FirebaseAuthException e) {
+        } catch (Exception e) {
             return ResponseEntity.badRequest()
-                .body(Map.of("error", "Failed to list users: " + e.getMessage()));
+                .body(Map.of("error", "Failed to list test accounts: " + e.getMessage()));
         }
     }
 }

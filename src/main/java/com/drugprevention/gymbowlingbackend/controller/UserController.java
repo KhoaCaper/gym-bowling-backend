@@ -4,6 +4,7 @@ import com.drugprevention.gymbowlingbackend.entity.Role;
 import com.drugprevention.gymbowlingbackend.entity.User;
 import com.drugprevention.gymbowlingbackend.repository.RoleRepository;
 import com.drugprevention.gymbowlingbackend.repository.UserRepository;
+import com.drugprevention.gymbowlingbackend.service.UserService;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.UserRecord;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +20,16 @@ public class UserController {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final FirebaseAuth firebaseAuth;
+    private final UserService userService;
 
     public UserController(UserRepository userRepository, 
                          RoleRepository roleRepository,
-                         FirebaseAuth firebaseAuth) {
+                         FirebaseAuth firebaseAuth,
+                         UserService userService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.firebaseAuth = firebaseAuth;
+        this.userService = userService;
     }
 
     @PostMapping("/register")
@@ -66,15 +70,8 @@ public class UserController {
 
             UserRecord firebaseUser = firebaseAuth.createUser(firebaseRequest);
 
-            // Create user in our database
-            User user = new User(firebaseUser.getUid(), email, fullName, phone);
-            
-            // Set default role
-            Role userRole = roleRepository.findByName("USER")
-                .orElseThrow(() -> new RuntimeException("Default USER role not found"));
-            user.setRole(userRole);
-
-            user = userRepository.save(user);
+            // Create user in our database using UserService (password will be encoded)
+            User user = userService.createTraditionalUser(username, password, email, fullName, phone);
 
             return ResponseEntity.ok(Map.of(
                 "message", "User registered successfully",

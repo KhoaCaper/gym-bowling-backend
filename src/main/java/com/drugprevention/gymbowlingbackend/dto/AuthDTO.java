@@ -9,6 +9,9 @@ public class AuthDTO {
             example = "Login successful with Gmail")
     private String message;
     
+    @Schema(description = "JWT token for authentication")
+    private String token;
+    
     @Schema(description = "User information")
     private UserInfo user;
     
@@ -19,8 +22,9 @@ public class AuthDTO {
     // Constructors
     public AuthDTO() {}
     
-    public AuthDTO(String message, UserInfo user) {
+    public AuthDTO(String message, String token, UserInfo user) {
         this.message = message;
+        this.token = token;
         this.user = user;
     }
     
@@ -31,6 +35,9 @@ public class AuthDTO {
     // Getters and Setters
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }
+    
+    public String getToken() { return token; }
+    public void setToken(String token) { this.token = token; }
     
     public UserInfo getUser() { return user; }
     public void setUser(UserInfo user) { this.user = user; }

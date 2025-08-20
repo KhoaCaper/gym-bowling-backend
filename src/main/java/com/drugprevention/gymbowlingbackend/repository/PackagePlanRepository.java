@@ -10,4 +10,13 @@ import java.util.List;
 public interface PackagePlanRepository extends JpaRepository<PackagePlan, Long> {
     List<PackagePlan> findByIsActiveTrue();
     List<PackagePlan> findByIsActiveTrueOrderByPriceAsc();
+    
+    /**
+     * Check if package plan with given name exists in the specified center
+     * 
+     * @param name Package plan name
+     * @param centerId Center ID
+     * @return true if package plan exists, false otherwise
+     */
+    boolean existsByNameAndCenterId(String name, Long centerId);
 }

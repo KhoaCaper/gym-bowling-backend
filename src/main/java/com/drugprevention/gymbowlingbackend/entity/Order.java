@@ -31,6 +31,9 @@ public class Order {
     @Column(nullable = false)
     private LocalDateTime orderDate = LocalDateTime.now();
     
+    @Column
+    private LocalDateTime updatedAt;
+    
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     private Payment payment;
     
@@ -67,6 +70,9 @@ public class Order {
     
     public LocalDateTime getOrderDate() { return orderDate; }
     public void setOrderDate(LocalDateTime orderDate) { this.orderDate = orderDate; }
+    
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
     
     public Payment getPayment() { return payment; }
     public void setPayment(Payment payment) { this.payment = payment; }

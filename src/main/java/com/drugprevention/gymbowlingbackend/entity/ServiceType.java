@@ -20,12 +20,16 @@ public class ServiceType {
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
     
+    @Column(nullable = false)
+    private Boolean isActive = true;
+    
     // Constructors
     public ServiceType() {}
     
     public ServiceType(String name, String description) {
         this.name = name;
         this.description = description;
+        this.isActive = true;
     }
     
     // Getters and Setters
@@ -40,4 +44,7 @@ public class ServiceType {
     
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    
+    public Boolean getIsActive() { return isActive; }
+    public void setIsActive(Boolean isActive) { this.isActive = isActive; }
 }

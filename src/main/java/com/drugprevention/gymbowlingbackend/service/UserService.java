@@ -6,8 +6,10 @@ import com.drugprevention.gymbowlingbackend.repository.UserRepository;
 import com.drugprevention.gymbowlingbackend.repository.RoleRepository;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,29 +19,42 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final FirebaseAuth firebaseAuth;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, FirebaseAuth firebaseAuth) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, FirebaseAuth firebaseAuth, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.firebaseAuth = firebaseAuth;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User createOrUpdateUser(String firebaseUid, String email, String fullName, String phone) {
-        Optional<User> existingUser = userRepository.findByFirebaseUid(firebaseUid);
-        
-        if (existingUser.isPresent()) {
-            User user = existingUser.get();
-            user.setEmail(email);
-            user.setFullName(fullName);
-            user.setPhone(phone);
-            return userRepository.save(user);
+        if (firebaseUid != null) {
+            Optional<User> existingUser = userRepository.findByFirebaseUid(firebaseUid);
+            
+            if (existingUser.isPresent()) {
+                User user = existingUser.get();
+                user.setEmail(email);
+                user.setFullName(fullName);
+                user.setPhone(phone);
+                user.setUpdatedAt(LocalDateTime.now());
+                return userRepository.save(user);
+            } else {
+                // Generate username from email (remove @domain.com)
+                String username = email.split("@")[0];
+                // Generate a default password and encode it
+                String defaultPassword = "default_password_" + System.currentTimeMillis();
+                String encodedPassword = passwordEncoder.encode(defaultPassword);
+                
+                User newUser = new User(username, encodedPassword, firebaseUid, email, fullName, phone);
+                // Set default role as USER
+                Role userRole = roleRepository.findByName("USER")
+                    .orElseThrow(() -> new RuntimeException("Default USER role not found"));
+                newUser.setRole(userRole);
+                return userRepository.save(newUser);
+            }
         } else {
-            User newUser = new User(firebaseUid, email, fullName, phone);
-            // Set default role as USER
-            Role userRole = roleRepository.findByName("USER")
-                .orElseThrow(() -> new RuntimeException("Default USER role not found"));
-            newUser.setRole(userRole);
-            return userRepository.save(newUser);
+            throw new RuntimeException("Firebase UID is required for this method");
         }
     }
 
@@ -49,6 +64,10 @@ public class UserService {
 
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+    
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 
     public User getCurrentUser(String firebaseUid) {
@@ -66,6 +85,11 @@ public class UserService {
             String firebaseUid = decodedToken.getUid();
             String email = decodedToken.getEmail();
             String name = decodedToken.getName();
+            
+            // Generate username from email
+            String username = email.split("@")[0];
+            // Generate a default password
+            String defaultPassword = "default_password_" + System.currentTimeMillis();
             
             return createOrUpdateUser(firebaseUid, email, name, null);
         } catch (Exception e) {
@@ -97,9 +121,9 @@ public class UserService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
         
-        // Since User entity doesn't have isActive field, we'll just return the user
-        // You can add isActive field to User entity if needed
-        return user;
+        user.setIsActive(!user.getIsActive());
+        user.setUpdatedAt(LocalDateTime.now());
+        return userRepository.save(user);
     }
 
     public void deleteUser(Long userId) {
@@ -137,5 +161,31 @@ public class UserService {
         }
         
         roleRepository.deleteById(roleId);
+    }
+
+    // Traditional user creation with encoded password
+    public User createTraditionalUser(String username, String password, String email, String fullName, String phone) {
+        if (userRepository.existsByUsername(username)) {
+            throw new RuntimeException("Username already exists: " + username);
+        }
+        
+        // Encode password before saving
+        String encodedPassword = passwordEncoder.encode(password);
+        
+        User newUser = new User(username, encodedPassword, null, email, fullName, phone);
+        // Set default role as USER
+        Role userRole = roleRepository.findByName("USER")
+            .orElseThrow(() -> new RuntimeException("Default USER role not found"));
+        newUser.setRole(userRole);
+        return userRepository.save(newUser);
+    }
+
+    // Verify password for traditional login
+    public boolean verifyPassword(String username, String rawPassword) {
+        Optional<User> user = userRepository.findByUsername(username);
+        if (user.isPresent()) {
+            return passwordEncoder.matches(rawPassword, user.get().getPassword());
+        }
+        return false;
     }
 }

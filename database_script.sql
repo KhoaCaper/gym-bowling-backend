@@ -56,12 +56,16 @@ CREATE TABLE roles (
 -- 2. USERS TABLE
 CREATE TABLE users (
     id BIGINT IDENTITY(1,1) PRIMARY KEY,
-    firebase_uid NVARCHAR(128) NOT NULL UNIQUE,
-    email NVARCHAR(255) NOT NULL UNIQUE,
-    full_name NVARCHAR(255) NOT NULL,
+    username NVARCHAR(50) UNIQUE NOT NULL,
+    password NVARCHAR(255) NOT NULL,
+    firebase_uid NVARCHAR(255) UNIQUE, -- Changed from NOT NULL to nullable
+    email NVARCHAR(100) UNIQUE NOT NULL,
+    full_name NVARCHAR(100) NOT NULL,
     phone NVARCHAR(20),
     role_id BIGINT NOT NULL,
-    created_at DATETIME2 DEFAULT GETDATE(),
+    is_active BIT NOT NULL DEFAULT 1,
+    created_at DATETIME2 NOT NULL DEFAULT GETDATE(),
+    updated_at DATETIME2,
     FOREIGN KEY (role_id) REFERENCES roles(id)
 );
 
@@ -72,8 +76,10 @@ CREATE TABLE centers (
     address NVARCHAR(500),
     phone NVARCHAR(20),
     email NVARCHAR(255),
+    description NVARCHAR(MAX),
     is_active BIT DEFAULT 1,
-    created_at DATETIME2 DEFAULT GETDATE()
+    created_at DATETIME2 DEFAULT GETDATE(),
+    updated_at DATETIME2
 );
 
 -- 4. SERVICE_TYPES TABLE
@@ -95,6 +101,7 @@ CREATE TABLE services (
     service_type_id BIGINT NOT NULL,
     is_active BIT DEFAULT 1,
     created_at DATETIME2 DEFAULT GETDATE(),
+    updated_at DATETIME2,
     FOREIGN KEY (center_id) REFERENCES centers(id),
     FOREIGN KEY (service_type_id) REFERENCES service_types(id)
 );
@@ -108,6 +115,7 @@ CREATE TABLE time_frames (
     end_time TIME NOT NULL,
     is_available BIT DEFAULT 1,
     created_at DATETIME2 DEFAULT GETDATE(),
+    updated_at DATETIME2,
     FOREIGN KEY (center_id) REFERENCES centers(id)
 );
 
@@ -121,6 +129,7 @@ CREATE TABLE package_plans (
     center_id BIGINT NOT NULL,
     is_active BIT DEFAULT 1,
     created_at DATETIME2 DEFAULT GETDATE(),
+    updated_at DATETIME2,
     FOREIGN KEY (center_id) REFERENCES centers(id)
 );
 
@@ -131,6 +140,7 @@ CREATE TABLE package_plan_details (
     service_id BIGINT NOT NULL,
     sessions_included INT DEFAULT 1,
     created_at DATETIME2 DEFAULT GETDATE(),
+    updated_at DATETIME2,
     FOREIGN KEY (package_plan_id) REFERENCES package_plans(id),
     FOREIGN KEY (service_id) REFERENCES services(id)
 );
@@ -142,6 +152,7 @@ CREATE TABLE orders (
     total_amount DECIMAL(10,2) NOT NULL,
     status NVARCHAR(50) DEFAULT 'PENDING', -- PENDING, PAID, CANCELLED, COMPLETED
     order_date DATETIME2 DEFAULT GETDATE(),
+    updated_at DATETIME2,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
@@ -156,6 +167,7 @@ CREATE TABLE order_packages (
     start_time DATETIME2,
     end_time DATETIME2,
     created_at DATETIME2 DEFAULT GETDATE(),
+    updated_at DATETIME2,
     FOREIGN KEY (order_id) REFERENCES orders(id),
     FOREIGN KEY (package_plan_id) REFERENCES package_plans(id)
 );
@@ -168,8 +180,10 @@ CREATE TABLE payments (
     payment_method NVARCHAR(50) DEFAULT 'VNPAY',
     status NVARCHAR(50) DEFAULT 'PENDING', -- PENDING, SUCCESS, FAILED
     transaction_id NVARCHAR(255),
+    payment_date DATETIME2 DEFAULT GETDATE(),
     vnpay_response NVARCHAR(MAX),
     created_at DATETIME2 DEFAULT GETDATE(),
+    updated_at DATETIME2,
     FOREIGN KEY (order_id) REFERENCES orders(id)
 );
 
@@ -178,6 +192,7 @@ CREATE TABLE payments (
 -- =====================================================
 
 -- Users indexes
+CREATE INDEX idx_users_username ON users(username);
 CREATE INDEX idx_users_firebase_uid ON users(firebase_uid);
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_role_id ON users(role_id);
@@ -220,10 +235,10 @@ INSERT INTO roles (name, description) VALUES
 ('USER', 'Regular user with basic access');
 
 -- Insert sample centers
-INSERT INTO centers (name, address, phone, email) VALUES
-('Center A', '123 Main Street, District 1, HCMC', '0901234567', 'centera@example.com'),
-('Center B', '456 Business Avenue, District 3, HCMC', '0901234568', 'centerb@example.com'),
-('Center C', '789 Central Road, District 1, HCMC', '0901234569', 'centerc@example.com');
+INSERT INTO centers (name, address, phone, email, description) VALUES
+('Center A', '123 Main Street, District 1, HCMC', '0901234567', 'centera@example.com', 'Premium gym and fitness center with modern equipment and professional trainers'),
+('Center B', '456 Business Avenue, District 3, HCMC', '0901234568', 'centerb@example.com', 'Professional bowling center with multiple lanes and tournament facilities'),
+('Center C', '789 Central Road, District 1, HCMC', '0901234569', 'centerc@example.com', 'Combined sports complex offering both gym and bowling facilities');
 
 -- Insert service types
 INSERT INTO service_types (name, description) VALUES
@@ -322,8 +337,8 @@ INSERT INTO package_plan_details (package_plan_id, service_id, sessions_included
 (8, 8, 12); -- 12 fitness class + bowling sessions
 
 -- Insert sample admin user
-INSERT INTO users (firebase_uid, email, full_name, role_id) VALUES
-('admin_firebase_uid', 'admin@gymbowling.com', 'System Administrator', 1);
+INSERT INTO users (username, password, firebase_uid, email, full_name, role_id) VALUES
+('admin', 'admin_password', 'admin_firebase_uid', 'admin@gymbowling.com', 'System Administrator', 1);
 
 -- =====================================================
 -- CREATE VIEWS FOR COMMON QUERIES

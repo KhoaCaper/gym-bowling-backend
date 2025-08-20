@@ -33,6 +33,9 @@ public class PackagePlan {
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
     
+    @Column
+    private LocalDateTime updatedAt;
+    
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "center_id", nullable = false)
     private Center center;
@@ -77,6 +80,9 @@ public class PackagePlan {
     
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
     
     public List<PackagePlanDetail> getPackagePlanDetails() { return packagePlanDetails; }
     public void setPackagePlanDetails(List<PackagePlanDetail> packagePlanDetails) { this.packagePlanDetails = packagePlanDetails; }

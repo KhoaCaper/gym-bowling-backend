@@ -2,6 +2,7 @@ package com.drugprevention.gymbowlingbackend.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Schema(description = "Request body for creating a new package")
 public class CreatePackageDTO {
@@ -17,6 +18,12 @@ public class CreatePackageDTO {
     
     @Schema(description = "Duration in months", example = "1", required = true)
     private Integer durationMonths;
+    
+    @Schema(description = "Center ID where the package is available", example = "1", required = true)
+    private Long centerId;
+    
+    @Schema(description = "List of service IDs included in this package", example = "[1, 2, 3]")
+    private List<Long> serviceIds;
     
     @Schema(description = "Is package active", example = "true")
     private Boolean isActive = true;
@@ -36,6 +43,12 @@ public class CreatePackageDTO {
     
     public Integer getDurationMonths() { return durationMonths; }
     public void setDurationMonths(Integer durationMonths) { this.durationMonths = durationMonths; }
+    
+    public Long getCenterId() { return centerId; }
+    public void setCenterId(Long centerId) { this.centerId = centerId; }
+    
+    public List<Long> getServiceIds() { return serviceIds; }
+    public void setServiceIds(List<Long> serviceIds) { this.serviceIds = serviceIds; }
     
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
