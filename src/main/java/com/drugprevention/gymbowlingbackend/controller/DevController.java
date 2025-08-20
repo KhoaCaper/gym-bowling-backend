@@ -12,6 +12,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Arrays;
 
 @RestController
 @RequestMapping("/api/dev")
@@ -112,5 +115,58 @@ public class DevController {
             return ResponseEntity.badRequest()
                 .body(Map.of("error", "Failed to list test accounts: " + e.getMessage()));
         }
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<Map<String, Object>> test() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Backend is working!");
+        response.put("timestamp", new Date());
+        response.put("status", "success");
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/demo-package-creation")
+    public ResponseEntity<Map<String, Object>> demoPackageCreation() {
+        Map<String, Object> demo = new HashMap<>();
+        demo.put("message", "Demo: How to create Gym + Bowling Package");
+        demo.put("steps", Arrays.asList(
+            "1. Create PackagePlan (e.g., 'Center A Fitness Combo')",
+            "2. Add PackagePlanDetail 1: Gym service + TimeFrame (6h-8h)",
+            "3. Add PackagePlanDetail 2: Bowling service + TimeFrame (19h-21h)"
+        ));
+        demo.put("example_request", Map.of(
+            "package_plan", Map.of(
+                "name", "Center A Fitness Combo",
+                "description", "Gym morning + Bowling evening",
+                "price", 1200000,
+                "durationMonths", 1,
+                "centerId", 1
+            ),
+            "package_details", Arrays.asList(
+                Map.of(
+                    "serviceId", 1, // Gym service
+                    "timeFrameId", 1, // 6h-8h timeframe
+                    "sessionsIncluded", 30
+                ),
+                Map.of(
+                    "serviceId", 2, // Bowling service  
+                    "timeFrameId", 5, // 19h-21h timeframe
+                    "sessionsIncluded", 20
+                )
+            )
+        ));
+        demo.put("endpoints", Map.of(
+            "create_package", "POST /api/package-plans",
+            "add_details", "POST /api/package-plans/{id}/create-complete",
+            "view_details", "GET /api/package-plans/{id}/details"
+        ));
+        
+        return ResponseEntity.ok(demo);
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<String> root() {
+        return ResponseEntity.ok("Gym Bowling Backend is running!");
     }
 }

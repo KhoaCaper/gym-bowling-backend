@@ -1,9 +1,12 @@
+# TEMPLATE FILE - SAFE FOR GIT COMMITS
+# Copy this file to application.properties and fill in your values
+
 spring.application.name=gym-bowling-backend
 
 # SQL Server Configuration
 spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=gym_bowling;encrypt=true;trustServerCertificate=true
-spring.datasource.username=sa
-spring.datasource.password=YOUR_SQL_SERVER_PASSWORD
+spring.datasource.username=YOUR_USERNAME
+spring.datasource.password=YOUR_PASSWORD
 spring.datasource.driver-class-name=com.microsoft.sqlserver.jdbc.SQLServerDriver
 
 # JPA Configuration
@@ -26,4 +29,7 @@ vnpay.returnUrl=http://localhost:8080/api/payment/vnpay-return
 # Swagger Configuration
 springdoc.api-docs.path=/api-docs
 springdoc.swagger-ui.path=/swagger-ui.html
-springdoc.swagger-ui.operationsSorter=method
+
+# JWT Configuration
+app.jwt.secret=YOUR_SUPER_SECRET_JWT_KEY_HERE_MAKE_IT_VERY_LONG_AND_SECURE
+app.jwt.expiration=86400000

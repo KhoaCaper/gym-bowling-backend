@@ -16,18 +16,22 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
+import org.springframework.http.HttpMethod;
 
-@Configuration
-@EnableWebSecurity
+// TEMPORARILY DISABLED FOR TEAM TESTING
+// @Configuration
+// @EnableWebSecurity
 public class SecurityConfig {
 
-    private final FirebaseAuthenticationFilter firebaseAuthenticationFilter;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    // TEMPORARILY DISABLE ALL AUTH FOR FASTEST TEAM TESTING
+    // private final FirebaseAuthenticationFilter firebaseAuthenticationFilter;
+    // private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    public SecurityConfig(FirebaseAuthenticationFilter firebaseAuthenticationFilter, JwtAuthenticationFilter jwtAuthenticationFilter) {
-        this.firebaseAuthenticationFilter = firebaseAuthenticationFilter;
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-    }
+    // public SecurityConfig(FirebaseAuthenticationFilter firebaseAuthenticationFilter) {
+    //     this.firebaseAuthenticationFilter = firebaseAuthenticationFilter;
+    //     // this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    // }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -36,37 +40,22 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        // COMPLETELY DISABLE SECURITY FOR TEAM TESTING - FASTEST WAY
+        http.cors(cors -> cors.disable())
             .csrf(csrf -> csrf.disable())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/users/**").permitAll() // Traditional auth
-                .requestMatchers("/api/payment/vnpay-return").permitAll()
-                .requestMatchers("/api/package-plans", "/api/package-plans/**").permitAll()
-                .requestMatchers("/api/centers", "/api/centers/**").permitAll() // Public center info
-                .requestMatchers("/api/timeframes", "/api/timeframes/**").permitAll() // Public timeframe info
-                .requestMatchers("/api/service-types", "/api/service-types/**").permitAll() // Public service type info
-                .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**").permitAll()
-                .requestMatchers("/api/dev/**").permitAll()  // Dev endpoints
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/staff/**").hasAnyRole("STAFF", "ADMIN")
-                .requestMatchers("/api/orders/**").hasAnyRole("USER", "STAFF", "ADMIN") // Users can manage their own orders
-                .anyRequest().authenticated()
-            )
-            .addFilterBefore(firebaseAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
+            .authorizeHttpRequests(authz -> authz.anyRequest().permitAll());
+        
         return http.build();
     }
 
+    // DISABLE CORS COMPLETELY FOR FASTEST TESTING
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("*"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(false); // Disable for fastest testing
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

@@ -1,62 +1,24 @@
-# Gradle
-.gradle/
-build/
-!gradle/wrapper/gradle-wrapper.jar
-!gradle/wrapper/gradle-wrapper.properties
+# Security and Configuration files
+src/main/resources/application.properties
+src/main/resources/application-simple.properties
+src/main/resources/application-team.properties
+src/main/resources/firebase-service-account.json
 
-# IntelliJ IDEA
+# IDE files
 .idea/
 *.iml
-*.ipr
 *.iws
+*.ipr
+
+# Build files
+build/
 out/
-
-# Eclipse
-.metadata
-.classpath
-.project
-.settings/
-bin/
-
-# VS Code
-.vscode/
-
-# OS
-.DS_Store
-Thumbs.db
+target/
+*.class
 
 # Logs
 *.log
-logs/
 
-# Application (ignore real config with sensitive data)
-src/main/resources/application.properties
-application-local.properties
-application-prod.properties
-
-# Firebase (IMPORTANT - Don't commit this!)
-src/main/resources/firebase-service-account.json
-
-# AI Generated files (local development only)
-AIGuide/
-
-# Environment variables
-.env
-.env.local
-
-# Database
-*.db
-*.sqlite
-
-# Temporary files
-*.tmp
-*.temp
-
-# Maven (if used)
-target/
-
-# Node modules (if frontend added later)
-node_modules/
-
-# Docker
-docker-compose.override.yml
+# OS files
+.DS_Store
+Thumbs.db
