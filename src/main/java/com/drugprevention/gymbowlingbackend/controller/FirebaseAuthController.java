@@ -76,6 +76,11 @@ public class FirebaseAuthController {
     })
     public ResponseEntity<AuthDTO> login(@Valid @RequestBody FirebaseLoginRequest request) {
         try {
+            if (firebaseAuth == null) {
+                return ResponseEntity.status(503)
+                    .body(new AuthDTO("Firebase service is not available"));
+            }
+            
             if (request.getIdToken() == null || request.getIdToken().trim().isEmpty()) {
                 return ResponseEntity.badRequest()
                     .body(new AuthDTO("Firebase ID token is required"));
