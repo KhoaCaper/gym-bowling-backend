@@ -13,12 +13,8 @@ import java.util.Map;
 public class HealthController {
 
     @GetMapping("/")
-    public ResponseEntity<Map<String, Object>> healthCheck() {
-        return ResponseEntity.ok(Map.of(
-            "status", "UP",
-            "service", "gym-bowling-backend",
-            "timestamp", System.currentTimeMillis()
-        ));
+    public ResponseEntity<String> healthCheck() {
+        return ResponseEntity.ok("OK");
     }
 
     @GetMapping("/health")
