@@ -4,7 +4,7 @@ echo Testing Ngrok Endpoints
 echo ========================================
 echo.
 
-set NGROK_URL=https://2be318c6f89a.ngrok-free.app
+set NGROK_URL=https://77d0e633886f.ngrok-free.app
 
 echo 🧪 Testing Ngrok Endpoints...
 echo 📍 Ngrok URL: %NGROK_URL%
@@ -35,7 +35,7 @@ if %errorlevel% equ 0 (
 )
 
 echo [4/5] Testing Time Frames API...
-curl -s "%NGROK_URL%/api/time-frames" >nul
+curl -s "%NGROK_URL%/api/timeframes" >nul
 if %errorlevel% equ 0 (
     echo ✅ Time Frames API: Working!
 ) else (
