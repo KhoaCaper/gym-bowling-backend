@@ -29,6 +29,7 @@ public class UserService {
     }
 
     public User createOrUpdateUser(String firebaseUid, String email, String fullName, String phone) {
+        // TEMPORARILY MODIFIED FOR TEAM TESTING - Allow null firebaseUid
         if (firebaseUid != null) {
             Optional<User> existingUser = userRepository.findByFirebaseUid(firebaseUid);
             
@@ -54,7 +55,17 @@ public class UserService {
                 return userRepository.save(newUser);
             }
         } else {
-            throw new RuntimeException("Firebase UID is required for this method");
+            // FOR TEAM TESTING - Create user without Firebase UID
+            String username = "test_user_" + System.currentTimeMillis();
+            String defaultPassword = "default_password_" + System.currentTimeMillis();
+            String encodedPassword = passwordEncoder.encode(defaultPassword);
+            
+            User newUser = new User(username, encodedPassword, null, email, fullName, phone);
+            // Set default role as USER
+            Role userRole = roleRepository.findByName("USER")
+                .orElseThrow(() -> new RuntimeException("Default USER role not found"));
+            newUser.setRole(userRole);
+            return userRepository.save(newUser);
         }
     }
 
@@ -77,10 +88,6 @@ public class UserService {
 
     public User verifyAndGetUser(String token) {
         try {
-            if (firebaseAuth == null) {
-                throw new RuntimeException("Firebase not initialized");
-            }
-            
             FirebaseToken decodedToken = firebaseAuth.verifyIdToken(token);
             String firebaseUid = decodedToken.getUid();
             String email = decodedToken.getEmail();
@@ -91,7 +98,7 @@ public class UserService {
             // Generate a default password
             String defaultPassword = "default_password_" + System.currentTimeMillis();
             
-            return createOrUpdateUser(firebaseUid, email, name, null);
+            return createOrUpdateUser(firebaseUid, email, name, null); // Pass null for phone
         } catch (Exception e) {
             throw new RuntimeException("Invalid Firebase token", e);
         }

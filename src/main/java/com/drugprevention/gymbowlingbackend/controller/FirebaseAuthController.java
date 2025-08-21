@@ -26,7 +26,7 @@ import java.util.Map;
  * @version 1.0
  */
 @RestController
-@RequestMapping("/api/firebase")
+@RequestMapping("/api/firebase-auth")
 @Tag(name = "Firebase Authentication", description = "Google Firebase authentication endpoints")
 @CrossOrigin(origins = "*")
 public class FirebaseAuthController {
@@ -35,7 +35,11 @@ public class FirebaseAuthController {
     private final JwtTokenProvider jwtTokenProvider;
     private final FirebaseAuth firebaseAuth;
 
-    public FirebaseAuthController(UserService userService, JwtTokenProvider jwtTokenProvider, FirebaseAuth firebaseAuth) {
+    public FirebaseAuthController(
+            UserService userService, 
+            JwtTokenProvider jwtTokenProvider,
+            FirebaseAuth firebaseAuth
+    ) {
         this.userService = userService;
         this.jwtTokenProvider = jwtTokenProvider;
         this.firebaseAuth = firebaseAuth;

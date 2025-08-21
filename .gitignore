@@ -1,7 +1,6 @@
 # Security and Configuration files
 src/main/resources/application.properties
-src/main/resources/application-simple.properties
-src/main/resources/application-team.properties
+src/main/resources/application-docker.properties
 src/main/resources/firebase-service-account.json
 
 # IDE files

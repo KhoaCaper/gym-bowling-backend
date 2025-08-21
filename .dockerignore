@@ -1,37 +1,42 @@
-# Gradle
-.gradle/
-gradle/
-gradlew
-gradlew.bat
+# Git
+.git
+.gitignore
 
 # IDE
 .idea/
 *.iml
+*.iws
+*.ipr
 .vscode/
+
+# Build
+build/
+out/
+target/
+*.class
+
+# Logs
+*.log
+logs/
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Git
-.git/
-.gitignore
+# Development files
+AIGuide/
+QUICK_START.md
+SECURITY_NOTES.md
+TEAM_TESTING_GUIDE.md
+ngrok.exe
 
-# Logs
-*.log
-
-# Build artifacts
-build/
-!build/libs/*.jar
+# Sensitive files
+src/main/resources/application.properties
+src/main/resources/firebase-service-account.json
+src/main/resources/application-simple.properties
+src/main/resources/application-team.properties
 
 # Docker
 Dockerfile
 docker-compose.yml
 .dockerignore
-
-# Database
-database_script.sql
-
-# Documentation
-README.md
-*.md

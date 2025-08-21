@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick Firebase Token Generator</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+</head>
+<body>
+    <h1>🔥 Quick Firebase Token for Swagger</h1>
+    
+    <div>
+        <input type="email" id="email" placeholder="admin@gym.com" value="admin@gym.com">
+        <input type="password" id="password" placeholder="addmini123" value="addmini123">
+        <button onclick="getToken()">Get Token for Swagger</button>
+    </div>
+    
+    <div>
+        <h3>📋 Copy this token to Swagger:</h3>
+        <textarea id="tokenOutput" style="width: 100%; height: 200px;" readonly></textarea>
+    </div>
+
+    <script>
+        // ⚠️ REPLACE WITH YOUR ACTUAL FIREBASE CONFIG
+        const firebaseConfig = {
+            // Lấy từ Firebase Console > Project Settings > General
+            apiKey: "YOUR_API_KEY",
+            authDomain: "gym-bowling-app.firebaseapp.com",
+            projectId: "gym-bowling-app"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+        async function getToken() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const result = await firebase.auth().signInWithEmailAndPassword(email, password);
+                const token = await result.user.getIdToken();
+                
+                document.getElementById('tokenOutput').value = token;
+                alert('✅ Token generated! Copy từ textarea và paste vào Swagger Authorization.');
+                
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

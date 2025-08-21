@@ -33,7 +33,7 @@ new Server().url("https://abc123.ngrok-free.app").description("Ngrok HTTPS Serve
 ## 🧪 Testing APIs
 
 ### Local Testing
-- **Swagger UI**: http://localhost:8080/swagger-ui.html
+- **Swagger UI**: https://b6c79b223d52.ngrok-free.app/swagger-ui/index.html
 - **API Docs**: http://localhost:8080/api-docs
 
 ### Ngrok Testing (for FE team)

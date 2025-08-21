@@ -19,19 +19,17 @@ import java.util.Arrays;
 import java.util.List;
 import org.springframework.http.HttpMethod;
 
-// TEMPORARILY DISABLED FOR TEAM TESTING
-// @Configuration
-// @EnableWebSecurity
+@Configuration
+@EnableWebSecurity
 public class SecurityConfig {
 
-    // TEMPORARILY DISABLE ALL AUTH FOR FASTEST TEAM TESTING
-    // private final FirebaseAuthenticationFilter firebaseAuthenticationFilter;
-    // private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final FirebaseAuthenticationFilter firebaseAuthenticationFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    // public SecurityConfig(FirebaseAuthenticationFilter firebaseAuthenticationFilter) {
-    //     this.firebaseAuthenticationFilter = firebaseAuthenticationFilter;
-    //     // this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-    // }
+    public SecurityConfig(FirebaseAuthenticationFilter firebaseAuthenticationFilter, JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.firebaseAuthenticationFilter = firebaseAuthenticationFilter;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -40,22 +38,65 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // COMPLETELY DISABLE SECURITY FOR TEAM TESTING - FASTEST WAY
-        http.cors(cors -> cors.disable())
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(authz -> authz.anyRequest().permitAll());
-        
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(authz -> authz
+                .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll() // Allow Swagger
+                .requestMatchers("/api/auth/**").permitAll() // Allow authentication endpoints
+                .requestMatchers("/api/firebase-auth/**").permitAll() // Allow Firebase auth
+                .requestMatchers("/api/public/**").permitAll() // Allow public endpoints
+                .requestMatchers("/api/cors-test/**").permitAll() // Allow CORS testing
+                
+                // PUBLIC ENDPOINTS - Không cần đăng nhập
+                .requestMatchers("/api/package-plans/**").permitAll() // View packages - PUBLIC
+                .requestMatchers("/api/packages/**").permitAll() // View packages - PUBLIC
+                .requestMatchers("/api/centers/**").permitAll() // View centers - PUBLIC
+                .requestMatchers("/api/service-types/**").permitAll() // View service types - PUBLIC
+                .requestMatchers("/api/time-frames/**").permitAll() // View time frames - PUBLIC
+                
+                // PROTECTED ENDPOINTS - Cần đăng nhập
+                .requestMatchers("/api/users/**").authenticated() // User management - PROTECTED
+                .requestMatchers("/api/orders/**").authenticated() // Order management - PROTECTED
+                .requestMatchers("/api/payments/**").authenticated() // Payment - PROTECTED
+                .requestMatchers("/api/admin/**").hasRole("ADMIN") // Admin only - PROTECTED
+                .requestMatchers("/api/staff/**").authenticated() // Staff endpoints - PROTECTED
+                
+                .anyRequest().authenticated() // Default: require authentication
+            )
+            .addFilterBefore(firebaseAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
-    // DISABLE CORS COMPLETELY FOR FASTEST TESTING
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("*"));
+        
+        // Allow specific origins for frontend - ENHANCED FOR NGROK
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+            "http://localhost:3000",           // React development
+            "http://localhost:5173",           // Vite development
+            "https://*.ngrok-free.app",        // Ngrok testing - ALL subdomains
+            "https://*.ngrok.io",              // Ngrok alternative domains
+            "https://your-frontend-domain.com" // Production (update this)
+        ));
+        
+        // Allow ALL methods for ngrok testing
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"));
+        
+        // Allow ALL headers for ngrok testing
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(false); // Disable for fastest testing
+        
+        // Allow credentials for JWT
+        configuration.setAllowCredentials(true);
+        
+        // Expose ALL headers for ngrok
+        configuration.setExposedHeaders(Arrays.asList("*"));
+        
+        // Set max age for preflight requests
+        configuration.setMaxAge(3600L);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

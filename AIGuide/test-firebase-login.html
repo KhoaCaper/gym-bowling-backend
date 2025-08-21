@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Firebase Login - Gym Bowling</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 600px; }
+        input { padding: 10px; margin: 5px; width: 300px; }
+        button { padding: 10px 20px; margin: 5px; background: #4CAF50; color: white; border: none; cursor: pointer; }
+        button:hover { background: #45a049; }
+        .result { background: #f0f0f0; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e8; color: #2e7d32; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Test Firebase Login - Gym Bowling</h1>
+        
+        <div>
+            <h3>📝 Login Form:</h3>
+            <input type="email" id="email" placeholder="Email (admin@gym.com)" value="admin@gym.com">
+            <input type="password" id="password" placeholder="Password (addmini123)" value="addmini123">
+            <br>
+            <button onclick="signIn()">🔑 Login</button>
+            <button onclick="signOut()">🚪 Logout</button>
+        </div>
+
+        <div>
+            <h3>🧪 Test API Endpoints:</h3>
+            <button onclick="testPackagesAPI()">📦 Test /api/packages</button>
+            <button onclick="testAuthAPI()">👤 Test /api/auth/me</button>
+            <button onclick="testStaffAPI()">⚙️ Test /api/staff/packages</button>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // ⚠️ THAY BẰNG CONFIG FIREBASE CỦA BẠN
+        // Lấy config từ Firebase Console > Project Settings > General > Your apps
+        const firebaseConfig = {
+            apiKey: "AIzaSyBqX...", // Thay bằng API key thực
+            authDomain: "gym-bowling-app.firebaseapp.com", 
+            projectId: "gym-bowling-app",
+            storageBucket: "gym-bowling-app.appspot.com",
+            messagingSenderId: "123456789", // Thay bằng sender ID thực
+            appId: "1:123456789:web:abc123def456" // Thay bằng app ID thực
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        let currentToken = null;
+
+        // Login Function
+        async function signIn() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                showResult('🔄 Đang login...', 'info');
+                
+                const result = await auth.signInWithEmailAndPassword(email, password);
+                currentToken = await result.user.getIdToken();
+                
+                showResult(`✅ Firebase Login thành công!
+                    <br>Email: ${result.user.email}
+                    <br>UID: ${result.user.uid}
+                    <br>Token: ${currentToken.substring(0, 50)}...`, 'success');
+                
+                // Test backend login
+                await testBackendLogin(currentToken);
+                
+            } catch (error) {
+                showResult(`❌ Login failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Logout Function
+        async function signOut() {
+            try {
+                await auth.signOut();
+                currentToken = null;
+                showResult('🚪 Logout thành công!', 'info');
+            } catch (error) {
+                showResult(`❌ Logout failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Test Backend Login
+        async function testBackendLogin(token) {
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        token: token,
+                        phone: '0123456789'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult(`✅ Backend Login thành công!
+                        <br>User: ${data.user.fullName}
+                        <br>Role: ${data.user.role}
+                        <br>Email: ${data.user.email}`, 'success');
+                } else {
+                    showResult(`❌ Backend Login failed: ${data.error}`, 'error');
+                }
+                
+            } catch (error) {
+                showResult(`❌ Backend connection failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Test Packages API (Public)
+        async function testPackagesAPI() {
+            try {
+                showResult('🔄 Testing /api/packages...', 'info');
+                
+                const response = await fetch('http://localhost:8080/api/packages');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult(`✅ Packages API thành công!
+                        <br>Found ${data.length} packages:
+                        <br>${data.map(p => `- ${p.name}: ${p.price} VND`).join('<br>')}`, 'success');
+                } else {
+                    showResult(`❌ Packages API failed: ${response.status}`, 'error');
+                }
+                
+            } catch (error) {
+                showResult(`❌ API connection failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Test Auth API (Protected)
+        async function testAuthAPI() {
+            if (!currentToken) {
+                showResult('❌ Cần login trước!', 'error');
+                return;
+            }
+            
+            try {
+                showResult('🔄 Testing /api/auth/me...', 'info');
+                
+                const response = await fetch('http://localhost:8080/api/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult(`✅ Auth API thành công!
+                        <br>User: ${data.user.fullName}
+                        <br>Role: ${data.user.role}
+                        <br>Email: ${data.user.email}`, 'success');
+                } else {
+                    showResult(`❌ Auth API failed: ${data.error}`, 'error');
+                }
+                
+            } catch (error) {
+                showResult(`❌ Auth API failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Test Staff API (Admin/Staff only)
+        async function testStaffAPI() {
+            if (!currentToken) {
+                showResult('❌ Cần login trước!', 'error');
+                return;
+            }
+            
+            try {
+                showResult('🔄 Testing /api/staff/packages...', 'info');
+                
+                const response = await fetch('http://localhost:8080/api/staff/packages', {
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult(`✅ Staff API thành công!
+                        <br>Found ${data.length} packages (including inactive):
+                        <br>${data.map(p => `- ${p.name}: ${p.price} VND (${p.isActive ? 'Active' : 'Inactive'})`).join('<br>')}`, 'success');
+                } else {
+                    showResult(`❌ Staff API failed: ${response.status} - ${data.error || 'Access denied'}`, 'error');
+                }
+                
+            } catch (error) {
+                showResult(`❌ Staff API failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Show Result Helper
+        function showResult(message, type) {
+            const resultsDiv = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            resultsDiv.innerHTML = `<div class="result ${type}">
+                <strong>[${timestamp}]</strong><br>
+                ${message}
+            </div>` + resultsDiv.innerHTML;
+        }
+
+        // Auth State Listener
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                console.log('User signed in:', user.email);
+            } else {
+                console.log('User signed out');
+                currentToken = null;
+            }
+        });
+    </script>
+</body>
+</html>

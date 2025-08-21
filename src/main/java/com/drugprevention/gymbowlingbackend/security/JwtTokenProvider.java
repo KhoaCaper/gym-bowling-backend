@@ -10,8 +10,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.util.Date;
 
-// TEMPORARILY DISABLED FOR TEAM TESTING
-// @Component
+@Component
 public class JwtTokenProvider {
 
     @Value("${app.jwt.secret}")

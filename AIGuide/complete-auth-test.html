@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Complete Auth Test - Gym Bowling</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .auth-section { background: white; padding: 30px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .form-group { margin: 15px 0; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        .btn { padding: 12px 24px; margin: 10px 5px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-google { background: #4285f4; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn:hover { opacity: 0.9; }
+        .result { background: #f8f9fa; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #007bff; }
+        .error { border-left-color: #dc3545; background: #f8d7da; color: #721c24; }
+        .success { border-left-color: #28a745; background: #d4edda; color: #155724; }
+        .tabs { display: flex; margin-bottom: 20px; }
+        .tab { padding: 10px 20px; background: #e9ecef; border: none; cursor: pointer; margin-right: 5px; }
+        .tab.active { background: #007bff; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Complete Authentication Test - Gym Bowling</h1>
+        
+        <!-- Auth Method Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('traditional')">📝 Traditional Auth</button>
+            <button class="tab" onclick="showTab('firebase')">🔥 Firebase Auth</button>
+            <button class="tab" onclick="showTab('test-apis')">🧪 Test APIs</button>
+        </div>
+
+        <!-- Traditional Auth Tab -->
+        <div id="traditional" class="tab-content active">
+            <div class="auth-section">
+                <h2>📝 Traditional Registration</h2>
+                <div class="form-group">
+                    <label>Username:</label>
+                    <input type="text" id="reg-username" placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="reg-email" placeholder="Enter email">
+                </div>
+                <div class="form-group">
+                    <label>Full Name:</label>
+                    <input type="text" id="reg-fullname" placeholder="Enter full name">
+                </div>
+                <div class="form-group">
+                    <label>Phone:</label>
+                    <input type="tel" id="reg-phone" placeholder="Enter phone (optional)">
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="reg-password" placeholder="Enter password (min 6 chars)">
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password:</label>
+                    <input type="password" id="reg-confirm" placeholder="Confirm password">
+                </div>
+                <button class="btn btn-success" onclick="traditionalRegister()">✅ Register</button>
+            </div>
+
+            <div class="auth-section">
+                <h2>🔑 Traditional Login</h2>
+                <div class="form-group">
+                    <label>Username or Email:</label>
+                    <input type="text" id="login-username" placeholder="Enter username or email">
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="login-password" placeholder="Enter password">
+                </div>
+                <button class="btn btn-primary" onclick="traditionalLogin()">🔑 Login</button>
+            </div>
+        </div>
+
+        <!-- Firebase Auth Tab -->
+        <div id="firebase" class="tab-content">
+            <div class="auth-section">
+                <h2>🔥 Firebase Authentication</h2>
+                <button class="btn btn-google" onclick="signInWithGoogle()">📧 Login with Google</button>
+                <button class="btn btn-danger" onclick="signOut()">🚪 Logout</button>
+            </div>
+        </div>
+
+        <!-- Test APIs Tab -->
+        <div id="test-apis" class="tab-content">
+            <div class="auth-section">
+                <h2>🧪 Test Backend APIs</h2>
+                <button class="btn btn-primary" onclick="testPackages()">📦 Test Packages</button>
+                <button class="btn btn-primary" onclick="testAuthMe()">👤 Test Auth Me</button>
+                <button class="btn btn-primary" onclick="testStaffAPI()">⚙️ Test Staff API</button>
+                <button class="btn btn-success" onclick="testCreateOrder()">💳 Test Create Order</button>
+            </div>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // ⚠️ UPDATE WITH YOUR FIREBASE CONFIG
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "gym-bowling-app.firebaseapp.com",
+            projectId: "gym-bowling-app",
+            storageBucket: "gym-bowling-app.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        let currentToken = null;
+        let currentUser = null;
+
+        // Tab Management
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // Traditional Registration
+        async function traditionalRegister() {
+            const username = document.getElementById('reg-username').value;
+            const email = document.getElementById('reg-email').value;
+            const fullName = document.getElementById('reg-fullname').value;
+            const phone = document.getElementById('reg-phone').value;
+            const password = document.getElementById('reg-password').value;
+            const confirmPassword = document.getElementById('reg-confirm').value;
+
+            if (password !== confirmPassword) {
+                showResult('❌ Passwords do not match!', 'error');
+                return;
+            }
+
+            try {
+                showResult('🔄 Creating account...', 'info');
+
+                const response = await fetch('http://localhost:8080/api/traditional-auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username, email, fullName, phone, password, confirmPassword
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showResult(`✅ Registration successful!
+                        <br><strong>Username:</strong> ${data.user.username}
+                        <br><strong>Email:</strong> ${data.user.email}
+                        <br><strong>Role:</strong> ${data.user.role}`, 'success');
+                } else {
+                    showResult(`❌ Registration failed: ${data.error}`, 'error');
+                }
+
+            } catch (error) {
+                showResult(`❌ Registration error: ${error.message}`, 'error');
+            }
+        }
+
+        // Traditional Login
+        async function traditionalLogin() {
+            const usernameOrEmail = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                showResult('🔄 Logging in...', 'info');
+
+                const response = await fetch('http://localhost:8080/api/traditional-auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usernameOrEmail, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Use custom token to get ID token
+                    const credential = await firebase.auth().signInWithCustomToken(data.customToken);
+                    currentToken = await credential.user.getIdToken();
+                    currentUser = credential.user;
+
+                    showResult(`✅ Login successful!
+                        <br><strong>Username:</strong> ${data.user.username}
+                        <br><strong>Email:</strong> ${data.user.email}
+                        <br><strong>Role:</strong> ${data.user.role}
+                        <br><strong>Token ready for API calls</strong>`, 'success');
+                } else {
+                    showResult(`❌ Login failed: ${data.error}`, 'error');
+                }
+
+            } catch (error) {
+                showResult(`❌ Login error: ${error.message}`, 'error');
+            }
+        }
+
+        // Google Sign In
+        async function signInWithGoogle() {
+            try {
+                showResult('🔄 Google login...', 'info');
+                
+                const provider = new firebase.auth.GoogleAuthProvider();
+                const result = await auth.signInWithPopup(provider);
+                currentUser = result.user;
+                currentToken = await currentUser.getIdToken();
+                
+                // Test backend login
+                const response = await fetch('http://localhost:8080/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: currentToken })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult(`✅ Google login successful!
+                        <br><strong>Email:</strong> ${currentUser.email}
+                        <br><strong>Name:</strong> ${currentUser.displayName}
+                        <br><strong>Backend:</strong> ${data.message}`, 'success');
+                } else {
+                    showResult(`❌ Backend login failed: ${data.error}`, 'error');
+                }
+                
+            } catch (error) {
+                showResult(`❌ Google login failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Sign Out
+        async function signOut() {
+            try {
+                await auth.signOut();
+                currentUser = null;
+                currentToken = null;
+                showResult('🚪 Logout successful!', 'info');
+            } catch (error) {
+                showResult(`❌ Logout failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Test APIs
+        async function testPackages() {
+            try {
+                const response = await fetch('http://localhost:8080/api/packages');
+                const data = await response.json();
+                showResult(`✅ Packages API: Found ${data.length} packages`, 'success');
+            } catch (error) {
+                showResult(`❌ Packages API failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function testAuthMe() {
+            if (!currentToken) {
+                showResult('❌ Need to login first!', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/me', {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult(`✅ Auth Me: ${data.user.fullName} (${data.user.role})`, 'success');
+                } else {
+                    showResult(`❌ Auth Me failed: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showResult(`❌ Auth Me error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testStaffAPI() {
+            if (!currentToken) {
+                showResult('❌ Need to login first!', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/staff/packages', {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult(`✅ Staff API: Access granted`, 'success');
+                } else {
+                    showResult(`❌ Staff API: ${response.status} - Access denied (need STAFF/ADMIN role)`, 'error');
+                }
+            } catch (error) {
+                showResult(`❌ Staff API error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testCreateOrder() {
+            if (!currentToken) {
+                showResult('❌ Need to login first!', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/payment/create-order', {
+                    method: 'POST',
+                    headers: { 
+                        'Authorization': `Bearer ${currentToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ packagePlanId: 1 })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult(`✅ Order created! Order ID: ${data.orderId}
+                        <br><a href="${data.paymentUrl}" target="_blank">🔗 Pay with VNPay</a>`, 'success');
+                } else {
+                    showResult(`❌ Create order failed: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showResult(`❌ Create order error: ${error.message}`, 'error');
+            }
+        }
+
+        // Helper function
+        function showResult(message, type) {
+            const resultsDiv = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            resultsDiv.innerHTML = `<div class="result ${type}">
+                <strong>[${timestamp}]</strong><br>
+                ${message}
+            </div>` + resultsDiv.innerHTML;
+        }
+
+        // Auth state listener
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                console.log('Firebase user signed in:', user.email);
+            } else {
+                console.log('Firebase user signed out');
+            }
+        });
+    </script>
+</body>
+</html>

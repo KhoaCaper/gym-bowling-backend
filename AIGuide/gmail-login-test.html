@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gmail Login Test - Gym Bowling</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 600px; }
+        button { padding: 12px 24px; margin: 10px; background: #4285f4; color: white; border: none; cursor: pointer; border-radius: 4px; }
+        button:hover { background: #357ae8; }
+        .result { background: #f0f0f0; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e8; color: #2e7d32; }
+        .token-box { background: #f5f5f5; padding: 10px; border: 1px solid #ddd; word-break: break-all; font-family: monospace; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Gmail Login Test - Gym Bowling</h1>
+        
+        <div>
+            <h3>🔑 Login Options:</h3>
+            <button onclick="signInWithGoogle()">📧 Login with Gmail</button>
+            <button onclick="signOut()">🚪 Logout</button>
+        </div>
+
+        <div>
+            <h3>🧪 Test Backend:</h3>
+            <button onclick="testBackendLogin()">🔗 Test Backend Login</button>
+            <button onclick="testAuthAPI()">👤 Test /api/auth/me</button>
+            <button onclick="testStaffAPI()">⚙️ Test Staff API</button>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // ⚠️ THAY BẰNG CONFIG THỰC TỪ FIREBASE CONSOLE
+        const firebaseConfig = {
+            apiKey: "AIzaSy...", // Copy từ Firebase Console
+            authDomain: "gym-bowling-app.firebaseapp.com",
+            projectId: "gym-bowling-app", 
+            storageBucket: "gym-bowling-app.appspot.com",
+            messagingSenderId: "123...", // Copy từ Firebase Console
+            appId: "1:123...:web:abc..." // Copy từ Firebase Console
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        let currentUser = null;
+        let currentToken = null;
+
+        // Google Sign In
+        async function signInWithGoogle() {
+            try {
+                showResult('🔄 Đang login với Gmail...', 'info');
+                
+                const provider = new firebase.auth.GoogleAuthProvider();
+                provider.addScope('email');
+                provider.addScope('profile');
+                
+                const result = await auth.signInWithPopup(provider);
+                currentUser = result.user;
+                currentToken = await currentUser.getIdToken();
+                
+                showResult(`✅ Gmail Login thành công!
+                    <br><strong>Email:</strong> ${currentUser.email}
+                    <br><strong>Name:</strong> ${currentUser.displayName}
+                    <br><strong>UID:</strong> ${currentUser.uid}
+                    <br><strong>Token:</strong> 
+                    <div class="token-box">${currentToken}</div>`, 'success');
+                
+            } catch (error) {
+                showResult(`❌ Gmail Login failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Sign Out
+        async function signOut() {
+            try {
+                await auth.signOut();
+                currentUser = null;
+                currentToken = null;
+                showResult('🚪 Logout thành công!', 'info');
+            } catch (error) {
+                showResult(`❌ Logout failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Test Backend Login
+        async function testBackendLogin() {
+            if (!currentToken) {
+                showResult('❌ Cần login Gmail trước!', 'error');
+                return;
+            }
+            
+            try {
+                showResult('🔄 Testing backend login...', 'info');
+                
+                const response = await fetch('http://localhost:8080/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        token: currentToken,
+                        phone: '0123456789'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult(`✅ Backend Login thành công!
+                        <br><strong>Message:</strong> ${data.message}
+                        <br><strong>User:</strong> ${data.user.fullName}
+                        <br><strong>Email:</strong> ${data.user.email}
+                        <br><strong>Role:</strong> ${data.user.role}
+                        <br><strong>Provider:</strong> ${data.user.provider}`, 'success');
+                } else {
+                    showResult(`❌ Backend Login failed: ${data.error}`, 'error');
+                }
+                
+            } catch (error) {
+                showResult(`❌ Backend connection failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Test Auth API
+        async function testAuthAPI() {
+            if (!currentToken) {
+                showResult('❌ Cần login trước!', 'error');
+                return;
+            }
+            
+            try {
+                showResult('🔄 Testing /api/auth/me...', 'info');
+                
+                const response = await fetch('http://localhost:8080/api/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult(`✅ Auth API thành công!
+                        <br><strong>User:</strong> ${data.user.fullName}
+                        <br><strong>Email:</strong> ${data.user.email}
+                        <br><strong>Role:</strong> ${data.user.role}`, 'success');
+                } else {
+                    showResult(`❌ Auth API failed: ${data.error}`, 'error');
+                }
+                
+            } catch (error) {
+                showResult(`❌ Auth API failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Test Staff API
+        async function testStaffAPI() {
+            if (!currentToken) {
+                showResult('❌ Cần login trước!', 'error');
+                return;
+            }
+            
+            try {
+                showResult('🔄 Testing staff API...', 'info');
+                
+                const response = await fetch('http://localhost:8080/api/staff/packages', {
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult(`✅ Staff API thành công! Found ${data.length} packages`, 'success');
+                } else {
+                    showResult(`❌ Staff API failed: ${response.status} - Access denied (need STAFF/ADMIN role)`, 'error');
+                }
+                
+            } catch (error) {
+                showResult(`❌ Staff API failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Show Result Helper
+        function showResult(message, type) {
+            const resultsDiv = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            resultsDiv.innerHTML = `<div class="result ${type}">
+                <strong>[${timestamp}]</strong><br>
+                ${message}
+            </div>` + resultsDiv.innerHTML;
+        }
+
+        // Auth State Listener
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                console.log('User signed in:', user.email);
+            } else {
+                console.log('User signed out');
+            }
+        });
+    </script>
+</body>
+</html>

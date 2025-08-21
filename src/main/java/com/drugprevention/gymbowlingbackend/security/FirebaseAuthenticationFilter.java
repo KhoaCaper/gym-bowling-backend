@@ -16,8 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
-// TEMPORARILY DISABLED FOR TEAM TESTING
-// @Component
+@Component
 public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired(required = false)

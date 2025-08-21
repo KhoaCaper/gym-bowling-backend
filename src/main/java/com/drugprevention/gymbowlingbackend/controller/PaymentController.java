@@ -132,7 +132,7 @@ public class PaymentController {
         try {
             String firebaseUid = (String) authentication.getPrincipal();
             User user = userService.getCurrentUser(firebaseUid);
-            var orders = orderService.getOrdersByUser(user.getId());
+            List<OrderDTO> orders = orderService.getOrdersByUser(user.getId());
             
             return ResponseEntity.ok(Map.of("orders", orders));
         } catch (Exception e) {

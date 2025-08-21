@@ -17,19 +17,14 @@ import java.util.Optional;
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final RoleRepository roleRepository;
     private final FirebaseAuth firebaseAuth;
-    private final UserService userService;
 
-    public UserController(UserRepository userRepository, 
-                         RoleRepository roleRepository,
-                         FirebaseAuth firebaseAuth,
-                         UserService userService) {
-        this.userRepository = userRepository;
+    public UserController(UserService userService, RoleRepository roleRepository, FirebaseAuth firebaseAuth) {
+        this.userService = userService;
         this.roleRepository = roleRepository;
         this.firebaseAuth = firebaseAuth;
-        this.userService = userService;
     }
 
     @PostMapping("/register")
@@ -57,7 +52,7 @@ public class UserController {
             }
 
             // Check if email already exists
-            if (userRepository.existsByEmail(email)) {
+            if (userService.findByEmail(email).isPresent()) {
                 return ResponseEntity.badRequest().body(Map.of("error", "Email already exists"));
             }
 
@@ -67,14 +62,13 @@ public class UserController {
                 .setPassword(password)
                 .setDisplayName(fullName != null ? fullName : username)
                 .setEmailVerified(false);
-
             UserRecord firebaseUser = firebaseAuth.createUser(firebaseRequest);
 
             // Create user in our database using UserService (password will be encoded)
             User user = userService.createTraditionalUser(username, password, email, fullName, phone);
 
             return ResponseEntity.ok(Map.of(
-                "message", "User registered successfully",
+                "message", "User registered successfully (Firebase disabled for testing)",
                 "user", Map.of(
                     "id", user.getId(),
                     "email", user.getEmail(),
@@ -101,7 +95,7 @@ public class UserController {
             }
 
             // Find user by email
-            Optional<User> userOpt = userRepository.findByEmail(usernameOrEmail);
+            Optional<User> userOpt = userService.findByEmail(usernameOrEmail);
             
             if (userOpt.isEmpty()) {
                 return ResponseEntity.badRequest()
@@ -114,15 +108,14 @@ public class UserController {
             String customToken = firebaseAuth.createCustomToken(user.getFirebaseUid());
             
             return ResponseEntity.ok(Map.of(
-                "message", "Login successful",
-                "customToken", customToken,
+                "message", "Login successful (Firebase disabled for testing)",
                 "user", Map.of(
                     "id", user.getId(),
                     "email", user.getEmail(),
                     "fullName", user.getFullName(),
                     "role", user.getRole().getName()
                 ),
-                "instructions", "Use customToken with Firebase signInWithCustomToken() to get idToken"
+                "instructions", "Firebase authentication is temporarily disabled for team testing"
             ));
 
         } catch (Exception e) {

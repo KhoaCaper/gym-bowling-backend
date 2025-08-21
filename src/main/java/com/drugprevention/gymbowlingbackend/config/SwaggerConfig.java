@@ -23,20 +23,19 @@ public class SwaggerConfig {
                         .version("1.0")
                         .description("API cho ứng dụng Gym Bowling - TẠM THỜI DISABLE SECURITY ĐỂ TEST")
                         .contact(new Contact()
-                                .name("Gym Bowling Team")
+                                .name("Gym Bowling Team")   
                                 .email("support@gymbowling.com")))
                 .servers(List.of(
-                    new Server().url("https://21a5df8bad8f.ngrok-free.app").description("Ngrok HTTPS Server - CURRENT"),
+                    new Server().url("https://2be318c6f89a.ngrok-free.app").description("Ngrok HTTPS Server - CURRENT"),
                     new Server().url("http://localhost:8080").description("Local Development Server")
-                ));
-                // REMOVED ALL SECURITY FOR FASTEST TEAM TESTING
-                // .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
-                // .components(new Components()
-                //         .addSecuritySchemes("bearerAuth", 
-                //                 new SecurityScheme()
-                //                         .type(SecurityScheme.Type.HTTP)
-                //                         .scheme("bearer")
-                //                         .bearerFormat("JWT")
-                //                         .description("Nhập Firebase ID Token")));
+                ))
+                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
+                .components(new Components()
+                        .addSecuritySchemes("bearerAuth", 
+                                new SecurityScheme()
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")
+                                        .description("Nhập Firebase ID Token")));
     }
 }

@@ -54,7 +54,7 @@ public class StaffPackageController {
     })
     public ResponseEntity<Map<String, Object>> getAllPackages() {
         try {
-            var packages = packagePlanService.getAllPackages();
+            List<PackagePlanDTO> packages = packagePlanService.getAllPackages();
             // The service already returns DTOs, so we can use them directly
             return ResponseEntity.ok(Map.of(
                 "packages", packages,

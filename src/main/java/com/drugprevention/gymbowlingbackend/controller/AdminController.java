@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Admin Controller
@@ -114,9 +115,9 @@ public class AdminController {
     })
     public ResponseEntity<Map<String, Object>> getUserById(@PathVariable Long id) {
         try {
-            var user = userService.getUserById(id);
-            if (user.isPresent()) {
-                User userEntity = user.get();
+            Optional<User> userOpt = userService.getUserById(id);
+            if (userOpt.isPresent()) {
+                User userEntity = userOpt.get();
                 // Create clean user data to avoid circular references
                 Map<String, Object> cleanUser = Map.of(
                     "id", userEntity.getId(),

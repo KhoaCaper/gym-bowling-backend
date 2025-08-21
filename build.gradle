@@ -9,8 +9,8 @@ version = '0.0.1-SNAPSHOT'
 description = 'gym-bowling-backend'
 
 java {
-    sourceCompatibility = '24'
-    targetCompatibility = '24'
+    sourceCompatibility = '17'
+    targetCompatibility = '17'
 }
 
 repositories {
@@ -25,6 +25,9 @@ dependencies {
     
     // SQL Server
     runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
+    
+    // PostgreSQL (for Railway)
+    runtimeOnly 'org.postgresql:postgresql'
     
     // Firebase Admin SDK
     implementation 'com.google.firebase:firebase-admin:9.2.0'
