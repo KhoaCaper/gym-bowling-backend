@@ -78,9 +78,10 @@ public class SecurityConfig {
         configuration.setAllowedOriginPatterns(Arrays.asList(
             "http://localhost:3000",           // React development
             "http://localhost:5173",           // Vite development
+            "http://localhost:8080",           // Local backend
             "https://*.ngrok-free.app",        // Ngrok testing - ALL subdomains
             "https://*.ngrok.io",              // Ngrok alternative domains
-            "https://your-frontend-domain.com" // Production (update this)
+            "https://ae332185633a.ngrok-free.app" // Current ngrok URL
         ));
         
         // Allow ALL methods for ngrok testing

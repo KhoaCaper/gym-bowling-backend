@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: gym-bowling-backend
+    env: java
+    plan: free
+    buildCommand: ./gradlew build -x test
+    startCommand: java -jar build/libs/*.jar
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: render
+      - key: SERVER_PORT
+        value: 10000
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: gym-bowling-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: gym-bowling-db
+          property: username
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: gym-bowling-db
+          property: password
+      - key: FIREBASE_ENABLED
+        value: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: VNPAY_RETURN_URL
+        value: https://gym-bowling-backend.onrender.com/api/payment/vnpay-return
+
+databases:
+  - name: gym-bowling-db
+    databaseName: gym_bowling
+    plan: free
+    ipAllowList: []

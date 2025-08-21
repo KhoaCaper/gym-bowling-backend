@@ -2,24 +2,39 @@ package com.drugprevention.gymbowlingbackend.controller;
 
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/cors-test")
-@CrossOrigin(origins = "*") // Temporary CORS override for testing
+@CrossOrigin(origins = {"http://localhost:5173", "https://ae332185633a.ngrok-free.app"})
 public class CorsTestController {
 
-    @GetMapping("/test")
-    public String testCors() {
-        return "CORS is working!";
+    @GetMapping("/ping")
+    public Map<String, Object> ping() {
+        return Map.of(
+            "message", "CORS test successful!",
+            "timestamp", System.currentTimeMillis(),
+            "status", "OK"
+        );
     }
 
     @PostMapping("/test")
-    public String testCorsPost(@RequestBody String body) {
-        return "CORS POST is working! Body: " + body;
+    public Map<String, Object> testPost(@RequestBody Map<String, Object> request) {
+        return Map.of(
+            "message", "POST request successful!",
+            "received", request,
+            "timestamp", System.currentTimeMillis(),
+            "status", "OK"
+        );
     }
 
-    @GetMapping("/headers")
-    public String testHeaders(@RequestHeader(value = "Origin", required = false) String origin,
-                             @RequestHeader(value = "User-Agent", required = false) String userAgent) {
-        return String.format("CORS Headers test - Origin: %s, User-Agent: %s", origin, userAgent);
+    @GetMapping("/firebase-test")
+    public Map<String, Object> firebaseTest() {
+        return Map.of(
+            "message", "Firebase endpoint accessible!",
+            "firebase_enabled", true,
+            "timestamp", System.currentTimeMillis(),
+            "status", "OK"
+        );
     }
 }
