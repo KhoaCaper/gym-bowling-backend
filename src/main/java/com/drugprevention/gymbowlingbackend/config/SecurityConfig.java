@@ -67,9 +67,17 @@ public class SecurityConfig {
                 .requestMatchers("/api/staff/**").authenticated() // Staff endpoints - PROTECTED
                 
                 .anyRequest().authenticated() // Default: require authentication
-            )
-            .addFilterBefore(firebaseAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+            );
+        
+        // Add Firebase filter only if it's available
+        if (firebaseAuthenticationFilter != null) {
+            http.addFilterBefore(firebaseAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        }
+        
+        // Add JWT filter
+        if (jwtAuthenticationFilter != null) {
+            http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        }
 
         return http.build();
     }

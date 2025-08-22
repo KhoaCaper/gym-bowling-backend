@@ -1,0 +1,5 @@
+[33me0b1b2b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m Add Railway deployment configuration files
+[33ma3f47c8[m Fix Railway healthcheck - Simplify root endpoint response and update gitignore
+[33m4334f08[m Fix Railway healthcheck - Increase timeout and add startup delay
+[33m2d29c3b[m Fix Firebase initialization for Railway - Prevent local file lookup in cloud environment
+[33m9c46dd6[m Fix Railway deployment - Add healthcheck endpoints and Tomcat configuration

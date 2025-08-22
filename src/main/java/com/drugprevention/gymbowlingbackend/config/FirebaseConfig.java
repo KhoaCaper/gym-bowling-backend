@@ -5,6 +5,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @Configuration
+@ConditionalOnProperty(name = "firebase.enabled", havingValue = "true")
 public class FirebaseConfig {
 
     @Value("${firebase.config.file:}")
@@ -25,6 +27,12 @@ public class FirebaseConfig {
 
     @PostConstruct
     public void initialize() {
+        // Only initialize if Firebase is explicitly enabled
+        if (!isFirebaseEnabled()) {
+            System.out.println("Firebase is disabled in production environment. Skipping initialization.");
+            return;
+        }
+        
         try {
             GoogleCredentials credentials = null;
             
@@ -69,8 +77,18 @@ public class FirebaseConfig {
         String railwayProjectId = System.getenv("RAILWAY_PROJECT_ID");
         return port != null || railwayProjectId != null;
     }
+    
+    private boolean isFirebaseEnabled() {
+        // Check if Firebase is explicitly enabled
+        String firebaseEnabled = System.getenv("FIREBASE_ENABLED");
+        if (firebaseEnabled != null) {
+            return "true".equalsIgnoreCase(firebaseEnabled);
+        }
+        return false; // Default to disabled in production
+    }
 
     @Bean
+    @ConditionalOnProperty(name = "firebase.enabled", havingValue = "true")
     public FirebaseAuth firebaseAuth() {
         try {
             if (FirebaseApp.getApps().isEmpty()) {

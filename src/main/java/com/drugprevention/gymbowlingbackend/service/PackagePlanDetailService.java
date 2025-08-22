@@ -8,11 +8,13 @@ import com.drugprevention.gymbowlingbackend.repository.PackagePlanRepository;
 import com.drugprevention.gymbowlingbackend.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class PackagePlanDetailService {
 
     @Autowired
@@ -38,11 +40,16 @@ public class PackagePlanDetailService {
             throw new RuntimeException("Service not found with id: " + dto.getServiceId());
         }
 
+        // Check if detail already exists
+        if (packagePlanDetailRepository.existsByPackagePlanIdAndServiceId(dto.getPackagePlanId(), dto.getServiceId())) {
+            throw new RuntimeException("Package plan detail already exists for package plan " + dto.getPackagePlanId() + " and service " + dto.getServiceId());
+        }
+
         // Create package plan detail
         PackagePlanDetail detail = new PackagePlanDetail(
             packagePlanOpt.get(),
             serviceOpt.get(),
-            dto.getSessionsIncluded()
+            dto.getSessionsIncluded() != null ? dto.getSessionsIncluded() : 1
         );
 
         return packagePlanDetailRepository.save(detail);
@@ -93,5 +100,20 @@ public class PackagePlanDetailService {
     // Get all package plan details
     public List<PackagePlanDetail> getAllPackagePlanDetails() {
         return packagePlanDetailRepository.findAll();
+    }
+    
+    // Get details with full information (eager loading)
+    public List<PackagePlanDetail> getDetailsByPackagePlanWithDetails(Long packagePlanId) {
+        return packagePlanDetailRepository.findByPackagePlanIdWithDetails(packagePlanId);
+    }
+    
+    // Delete all details for a package plan
+    public void deleteAllByPackagePlan(Long packagePlanId) {
+        packagePlanDetailRepository.deleteByPackagePlanId(packagePlanId);
+    }
+    
+    // Delete all details for a service
+    public void deleteAllByService(Long serviceId) {
+        packagePlanDetailRepository.deleteByServiceId(serviceId);
     }
 }
