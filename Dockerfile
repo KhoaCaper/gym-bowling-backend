@@ -25,5 +25,8 @@ RUN ./gradlew build -x test --no-daemon
 # Expose port
 EXPOSE 8080
 
+# Set default profile to render
+ENV SPRING_PROFILES_ACTIVE=render
+
 # Run the application
 CMD ["java", "-jar", "build/libs/gym-bowling-backend-0.0.1-SNAPSHOT.jar"]

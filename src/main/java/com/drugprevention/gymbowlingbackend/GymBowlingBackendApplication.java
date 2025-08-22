@@ -7,6 +7,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class GymBowlingBackendApplication {
 
     public static void main(String[] args) {
+        // Set default profile to render if no profile is specified
+        if (System.getProperty("spring.profiles.active") == null) {
+            System.setProperty("spring.profiles.active", "render");
+        }
         SpringApplication.run(GymBowlingBackendApplication.class, args);
     }
 
