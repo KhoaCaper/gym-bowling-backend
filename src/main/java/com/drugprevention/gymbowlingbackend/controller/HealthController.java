@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class HealthController {
 
     @GetMapping("/")
-    public String root() {
-        return "OK";
+    public String home() {
+        return "Gym Bowling Backend is running!";
     }
 
     @GetMapping("/ping")
@@ -16,8 +16,8 @@ public class HealthController {
         return "pong";
     }
 
-    @GetMapping("/ready")
-    public String ready() {
-        return "ready";
+    @GetMapping("/test")
+    public String test() {
+        return "Hello from Gym Bowling Backend!";
     }
 }
