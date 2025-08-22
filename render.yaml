@@ -10,8 +10,6 @@ services:
       - key: FIREBASE_ENABLED
         value: false
       - key: JWT_SECRET
-        generateValue: true
+        value: gym-bowling-2024-jwt-secret-key-render-deployment-production-secure-xyz123-abcdef-789
       - key: DATABASE_URL
-        fromDatabase:
-          name: gym-bowling-db
-          property: connectionString
+        value: postgresql://gymbowling_user:zMyX08N1mhIAxtMWAswNZdtezNM89Q5Z@dpg-d2k6l33uibrs73ehevfg-a/gymbowling
