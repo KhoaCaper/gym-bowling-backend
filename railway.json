@@ -5,7 +5,8 @@
   },
   "deploy": {
     "healthcheckPath": "/",
-    "healthcheckTimeout": 300,
-    "restartPolicyType": "on_failure"
+    "healthcheckTimeout": 600,
+    "restartPolicyType": "on_failure",
+    "startCommand": "sleep 30 && java -jar app.jar"
   }
 }
