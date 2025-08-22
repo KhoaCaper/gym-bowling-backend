@@ -34,11 +34,15 @@ public class FirebaseConfig {
                 credentials = GoogleCredentials.fromStream(credentialsStream);
                 System.out.println("Firebase initialized from environment variable");
             }
-            // Fallback to file (for local development)
-            else if (firebaseConfigFile != null && !firebaseConfigFile.trim().isEmpty()) {
-                InputStream serviceAccount = new ClassPathResource(firebaseConfigFile).getInputStream();
-                credentials = GoogleCredentials.fromStream(serviceAccount);
-                System.out.println("Firebase initialized from config file: " + firebaseConfigFile);
+            // Fallback to file (for local development) - ONLY if not in Railway environment
+            else if (firebaseConfigFile != null && !firebaseConfigFile.trim().isEmpty() && !isRailwayEnvironment()) {
+                try {
+                    InputStream serviceAccount = new ClassPathResource(firebaseConfigFile).getInputStream();
+                    credentials = GoogleCredentials.fromStream(serviceAccount);
+                    System.out.println("Firebase initialized from config file: " + firebaseConfigFile);
+                } catch (Exception e) {
+                    System.out.println("Local Firebase config file not found, skipping: " + e.getMessage());
+                }
             }
             
             if (credentials != null) {
@@ -57,6 +61,13 @@ public class FirebaseConfig {
             System.err.println("Failed to initialize Firebase: " + e.getMessage());
             // For development, continue without Firebase if config file not found
         }
+    }
+    
+    private boolean isRailwayEnvironment() {
+        // Check if we're running on Railway
+        String port = System.getenv("PORT");
+        String railwayProjectId = System.getenv("RAILWAY_PROJECT_ID");
+        return port != null || railwayProjectId != null;
     }
 
     @Bean
