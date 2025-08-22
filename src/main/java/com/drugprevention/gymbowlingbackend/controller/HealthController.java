@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 import java.util.Map;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Health Check Controller
@@ -13,8 +15,14 @@ import java.util.Map;
 public class HealthController {
 
     @GetMapping("/")
-    public ResponseEntity<String> healthCheck() {
-        return ResponseEntity.ok("OK");
+    public ResponseEntity<Map<String, Object>> rootHealthCheck() {
+        return ResponseEntity.ok(Map.of(
+            "status", "UP",
+            "service", "gym-bowling-backend",
+            "version", "1.0.0",
+            "timestamp", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+            "environment", "production"
+        ));
     }
 
     @GetMapping("/health")
@@ -22,7 +30,10 @@ public class HealthController {
         return ResponseEntity.ok(Map.of(
             "status", "UP",
             "service", "gym-bowling-backend",
-            "timestamp", System.currentTimeMillis()
+            "version", "1.0.0",
+            "timestamp", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+            "environment", "production",
+            "database", "connected"
         ));
     }
 }

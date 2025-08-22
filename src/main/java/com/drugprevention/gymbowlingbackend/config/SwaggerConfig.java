@@ -23,7 +23,7 @@ public class SwaggerConfig {
                         .version("1.0")
                         .description("API cho ứng dụng Gym Bowling - TẠM THỜI DISABLE SECURITY ĐỂ TEST")
                         .contact(new Contact()
-                                .name("Gym Bowling Team")   
+                                .name("Gym Bowling Team")
                                 .email("support@gymbowling.com")))
                 .servers(List.of(
                     new Server().url("https://ae332185633a.ngrok-free.app").description("Ngrok HTTPS Server - CURRENT"),

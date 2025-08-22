@@ -74,26 +74,29 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Allow specific origins for frontend - ENHANCED FOR NGROK
+        // Allow specific origins for frontend - ENHANCED FOR PRODUCTION
         configuration.setAllowedOriginPatterns(Arrays.asList(
             "http://localhost:3000",           // React development
             "http://localhost:5173",           // Vite development
             "http://localhost:8080",           // Local backend
             "https://*.ngrok-free.app",        // Ngrok testing - ALL subdomains
             "https://*.ngrok.io",              // Ngrok alternative domains
-            "https://ae332185633a.ngrok-free.app" // Current ngrok URL
+            "https://*.railway.app",           // Railway domains
+            "https://gym-bowling-backend-production.up.railway.app", // Main Railway URL
+            "https://*.vercel.app",            // Vercel domains
+            "https://*.netlify.app"            // Netlify domains
         ));
         
-        // Allow ALL methods for ngrok testing
+        // Allow ALL methods for production
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"));
         
-        // Allow ALL headers for ngrok testing
+        // Allow ALL headers for production
         configuration.setAllowedHeaders(Arrays.asList("*"));
         
         // Allow credentials for JWT
         configuration.setAllowCredentials(true);
         
-        // Expose ALL headers for ngrok
+        // Expose ALL headers for production
         configuration.setExposedHeaders(Arrays.asList("*"));
         
         // Set max age for preflight requests
