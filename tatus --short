@@ -1,0 +1,10 @@
+[33ma3f47c8[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m Fix Railway healthcheck - Simplify root endpoint response and update gitignore
+[33m4334f08[m Fix Railway healthcheck - Increase timeout and add startup delay
+[33m2d29c3b[m Fix Firebase initialization for Railway - Prevent local file lookup in cloud environment
+[33m9c46dd6[m Fix Railway deployment - Add healthcheck endpoints and Tomcat configuration
+[33mb7e2e89[m Remove unwanted file
+[33mdc355c3[m Complete Railway deployment setup - HealthController, SecurityConfig, application-railway.properties, railway.json
+[33m0c3a976[m Fix: Change ddl-auto from create-drop to update for Railway production
+[33m9acb8e2[m Clean up project for Railway deployment - Remove Docker, Render, keep only local and Railway configs
+[33m383dc49[m Fix Dockerfile: copy gradle wrapper directory correctly
+[33md4ea539[m Add Render deployment config, Docker setup, and PostgreSQL database script
