@@ -3,6 +3,9 @@ src/main/resources/firebase-service-account.json
 src/main/resources/application-local.properties
 src/main/resources/application.properties
 
+# AI Guide folder (contains sensitive setup files)
+AIGuide/
+
 # IDE files
 .idea/
 *.iml

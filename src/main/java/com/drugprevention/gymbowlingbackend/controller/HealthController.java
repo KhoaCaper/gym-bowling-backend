@@ -15,14 +15,8 @@ import java.time.format.DateTimeFormatter;
 public class HealthController {
 
     @GetMapping("/")
-    public ResponseEntity<Map<String, Object>> rootHealthCheck() {
-        return ResponseEntity.ok(Map.of(
-            "status", "UP",
-            "service", "gym-bowling-backend",
-            "version", "1.0.0",
-            "timestamp", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-            "environment", "production"
-        ));
+    public String rootHealthCheck() {
+        return "OK";
     }
 
     @GetMapping("/health")
