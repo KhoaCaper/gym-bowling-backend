@@ -1,0 +1,16 @@
+# ENVIRONMENT VARIABLES FOR RENDER DEPLOYMENT
+# Copy và paste từng dòng vào Render Environment Variables
+
+# Database Connection
+DATABASE_URL=postgresql://gymbowling_user:zMyX08N1mhIAxtMWAswNZdtezNM89Q5Z@dpg-d2k6l33uibrs73ehevfg-a/gymbowling
+
+# App Configuration
+JWT_SECRET=gym-bowling-2024-jwt-secret-key-render-deployment
+FIREBASE_ENABLED=false
+PORT=8080
+
+# Hướng dẫn thêm:
+# 1. Click "+ Add" trong Environment Variables
+# 2. Copy từng dòng KEY và VALUE
+# 3. Click "Save Changes"
+# 4. Lặp lại cho tất cả biến
