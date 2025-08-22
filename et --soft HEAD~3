@@ -1,0 +1,3 @@
+[33me7d7504[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m Fix Railway healthcheck - Allow / and /health endpoints without authentication
+[33md7404f3[m Fix Railway deployment - Remove sensitive files from Git tracking - Update railway.json with optimal settings - Add local development template and guide
+[33m9631949[m Fix Railway deployment configuration - HealthController returns OK for healthcheck - Add connection timeout settings - Update JWT secret - Add AIGuide to gitignore

@@ -1,0 +1,42 @@
+# Local Development Configuration Template
+# Copy this file to application.properties and fill in your values
+
+spring.application.name=gym-bowling-backend
+
+# SQL Server Configuration (Local)
+spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=gym_bowling;encrypt=true;trustServerCertificate=true
+spring.datasource.username=sa
+spring.datasource.password=YOUR_DATABASE_PASSWORD_HERE
+spring.datasource.driver-class-name=com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+# JPA Configuration
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.SQLServerDialect
+
+# Server Configuration
+server.port=8080
+
+# Firebase Configuration (local)
+firebase.config.file=firebase-service-account.json
+firebase.enabled=true
+
+# VNPay Configuration (local)
+vnpay.tmnCode=2QXUI4J4
+vnpay.hashSecret=RAOEVONQL21F7OBDXJLXG6Z4GPGIDTYN
+vnpay.payUrl=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+vnpay.returnUrl=http://localhost:8080/api/payment/vnpay-return
+
+# Swagger Configuration
+springdoc.api-docs.path=/api-docs
+springdoc.swagger-ui.path=/swagger-ui.html
+
+# JWT Configuration
+app.jwt.secret=YOUR_LOCAL_JWT_SECRET_HERE_MAKE_IT_LONG_AND_SECURE
+app.jwt.expiration=86400000
+
+# Logging for development
+logging.level.com.drugprevention.gymbowlingbackend=DEBUG
+logging.level.org.springframework.security=DEBUG
+logging.level.org.springframework.web=DEBUG
