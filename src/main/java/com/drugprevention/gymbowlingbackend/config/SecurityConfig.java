@@ -48,6 +48,10 @@ public class SecurityConfig {
                 .requestMatchers("/api/public/**").permitAll() // Allow public endpoints
                 .requestMatchers("/api/cors-test/**").permitAll() // Allow CORS testing
                 
+                // HEALTH CHECK ENDPOINTS - Không cần đăng nhập
+                .requestMatchers("/").permitAll() // Root healthcheck for Railway
+                .requestMatchers("/health").permitAll() // Health endpoint for monitoring
+                
                 // PUBLIC ENDPOINTS - Không cần đăng nhập
                 .requestMatchers("/api/package-plans/**").permitAll() // View packages - PUBLIC
                 .requestMatchers("/api/packages/**").permitAll() // View packages - PUBLIC
