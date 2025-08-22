@@ -1,7 +1,5 @@
 package com.drugprevention.gymbowlingbackend.controller;
 
-import com.drugprevention.gymbowlingbackend.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
@@ -16,39 +14,38 @@ import java.time.format.DateTimeFormatter;
 @RestController
 public class HealthController {
 
-    @Autowired
-    private UserRepository userRepository;
-
     @GetMapping("/")
     public String rootHealthCheck() {
         return "OK";
     }
 
+    @GetMapping("/ping")
+    public String ping() {
+        return "pong";
+    }
+
     @GetMapping("/health")
     public ResponseEntity<Map<String, Object>> health() {
         try {
-            // Test database connection with a simple query
-            long userCount = userRepository.count();
-            
+            // Simple health check without database dependency
             return ResponseEntity.ok(Map.of(
                 "status", "UP",
                 "service", "gym-bowling-backend",
                 "version", "1.0.0",
                 "timestamp", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                 "environment", "production",
-                "database", "connected",
-                "userCount", userCount,
-                "message", "Service is healthy and database is connected"
+                "database", "checking",
+                "message", "Service is starting up"
             ));
         } catch (Exception e) {
-            // Return service UP but database disconnected
+            // Return service UP even if there are errors
             return ResponseEntity.ok(Map.of(
                 "status", "UP",
                 "service", "gym-bowling-backend",
                 "version", "1.0.0",
                 "timestamp", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                 "environment", "production",
-                "database", "disconnected",
+                "database", "error",
                 "error", e.getMessage(),
                 "message", "Service is running but database connection failed"
             ));

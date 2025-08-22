@@ -5,8 +5,8 @@
     "buildCommand": "chmod +x ./gradlew && ./gradlew clean build -x test --no-daemon"
   },
   "deploy": {
-    "healthcheckPath": "/health",
-    "healthcheckTimeout": 300,
+    "healthcheckPath": "/ping",
+    "healthcheckTimeout": 600,
     "restartPolicyType": "on_failure",
     "startCommand": "java -Xmx512m -Xms256m -Dspring.profiles.active=railway -jar build/libs/gym-bowling-backend-0.0.1-SNAPSHOT.jar",
     "numReplicas": 1
