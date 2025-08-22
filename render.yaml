@@ -1,9 +1,7 @@
 services:
   - type: web
     name: gym-bowling-backend
-    env: java
-    buildCommand: ./gradlew build -x test
-    startCommand: java -jar build/libs/gym-bowling-backend-0.0.1-SNAPSHOT.jar
+    env: docker
     envVars:
       - key: PORT
         value: 8080
@@ -12,4 +10,4 @@ services:
       - key: JWT_SECRET
         value: gym-bowling-2024-jwt-secret-key-render-deployment-production-secure-xyz123-abcdef-789
       - key: DATABASE_URL
-        value: postgresql://gymbowling_user:zMyX08N1mhIAxtMWAswNZdtezNM89Q5Z@dpg-d2k6l33uibrs73ehevfg-a/gymbowling
+        value: postgresql://gymbowling_user:zMyX08N1mhIAxtMWAswNZdtezNM89Q5Z@dpg-d2k6l33ehevfg-a/gymbowling
