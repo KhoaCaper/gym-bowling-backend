@@ -13,7 +13,7 @@ JAVA_VERSION = "17"
 SPRING_PROFILES_ACTIVE = "railway"
 FIREBASE_ENABLED = "false"
 
-# Database configuration
+# Database configuration - Railway will provide these
 DATABASE_URL = "jdbc:postgresql://localhost:5432/gym_bowling"
 DATABASE_USERNAME = "postgres"
 DATABASE_PASSWORD = "password"
@@ -26,3 +26,4 @@ JWT_EXPIRATION = "86400000"
 VNPAY_TMN_CODE = "2QXUI4J4"
 VNPAY_HASH_SECRET = "RAOEVONQL21F7OBDXJLXG6Z4GPGIDTYN"
 VNPAY_PAY_URL = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
+VNPAY_RETURN_URL = "https://gym-bowling-backend-production.up.railway.app/api/payment/vnpay-return"
