@@ -15,25 +15,18 @@ public class GymBowlingBackendApplication {
             // Running on Render - use prod profile
             System.setProperty("spring.profiles.active", "prod");
             System.out.println("🚀 Running in RENDER production mode");
-        } else if (System.getenv("RAILWAY") != null) {
-            // Running on Railway - use railway profile
-            System.setProperty("spring.profiles.active", "railway");
-            System.out.println("🚂 Running in RAILWAY production mode");
         } else if (env != null && !env.isEmpty()) {
             // Profile specified via environment variable
             System.setProperty("spring.profiles.active", env);
             System.out.println("⚙️ Running with profile: " + env);
+        } else if (System.getenv("PORT") != null) {
+            // Railway/Render production - use railway profile
+            System.setProperty("spring.profiles.active", "railway");
+            System.out.println("🚂 Running in RAILWAY/RENDER mode (PORT=" + System.getenv("PORT") + ")");
         } else {
-            // Check if PORT environment variable exists (production indicator)
-            String port = System.getenv("PORT");
-            if (port != null && !port.isEmpty()) {
-                System.setProperty("spring.profiles.active", "prod");
-                System.out.println("🌐 Running in PRODUCTION mode (PORT=" + port + ")");
-            } else {
-                // Local development - use local profile
-                System.setProperty("spring.profiles.active", "local");
-                System.out.println("💻 Running in LOCAL development mode");
-            }
+            // Local development - use local profile
+            System.setProperty("spring.profiles.active", "local");
+            System.out.println("💻 Running in LOCAL development mode");
         }
         
         SpringApplication.run(GymBowlingBackendApplication.class, args);
