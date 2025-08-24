@@ -15,6 +15,10 @@ public class GymBowlingBackendApplication {
             // Running on Render - use prod profile
             System.setProperty("spring.profiles.active", "prod");
             System.out.println("🚀 Running in RENDER production mode");
+        } else if (System.getenv("RAILWAY") != null) {
+            // Running on Railway - use railway profile
+            System.setProperty("spring.profiles.active", "railway");
+            System.out.println("🚂 Running in RAILWAY production mode");
         } else if (env != null && !env.isEmpty()) {
             // Profile specified via environment variable
             System.setProperty("spring.profiles.active", env);
