@@ -58,7 +58,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/packages/**").permitAll() // View packages - PUBLIC
                 .requestMatchers(HttpMethod.GET, "/api/centers/**").permitAll() // View centers - PUBLIC
                 .requestMatchers(HttpMethod.GET, "/api/service-types/**").permitAll() // View service types - PUBLIC
-                .requestMatchers(HttpMethod.GET, "/api/time-frames/**").permitAll() // View time frames - PUBLIC
+                .requestMatchers(HttpMethod.GET, "/api/timeframes/**").permitAll() // View time frames - PUBLIC
                 
                 // STAFF ENDPOINTS - Chỉ STAFF mới được tạo/sửa/xóa
                 .requestMatchers(HttpMethod.POST, "/api/package-plans/**").hasRole("STAFF") // Create packages - STAFF ONLY
@@ -95,32 +95,11 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Allow specific origins for frontend - ENHANCED FOR PRODUCTION
-        configuration.setAllowedOriginPatterns(Arrays.asList(
-            "http://localhost:3000",           // React development
-            "http://localhost:5173",           // Vite development
-            "http://localhost:8080",           // Local backend
-            "https://*.ngrok-free.app",        // Ngrok testing - ALL subdomains
-            "https://*.ngrok.io",              // Ngrok alternative domains
-            "https://*.railway.app",           // Railway domains
-            "https://gym-bowling-backend-production.up.railway.app", // Main Railway URL
-            "https://*.vercel.app",            // Vercel domains
-            "https://*.netlify.app"            // Netlify domains
-        ));
-        
-        // Allow ALL methods for production
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"));
-        
-        // Allow ALL headers for production
+        // ULTRA SIMPLE CORS for learning and deployment
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("*"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        
-        // Allow credentials for JWT
-        configuration.setAllowCredentials(true);
-        
-        // Expose ALL headers for production
         configuration.setExposedHeaders(Arrays.asList("*"));
-        
-        // Set max age for preflight requests
         configuration.setMaxAge(3600L);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

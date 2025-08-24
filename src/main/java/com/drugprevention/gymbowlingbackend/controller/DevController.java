@@ -126,6 +126,26 @@ public class DevController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/test-cors")
+    public ResponseEntity<Map<String, Object>> testCors() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "CORS test successful!");
+        response.put("timestamp", new Date());
+        response.put("status", "success");
+        response.put("endpoint", "/api/dev/test-cors");
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/test-package-details")
+    public ResponseEntity<Map<String, Object>> testPackageDetails() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Package details endpoint accessible!");
+        response.put("timestamp", new Date());
+        response.put("status", "success");
+        response.put("endpoint", "/api/dev/test-package-details");
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/demo-package-creation")
     public ResponseEntity<Map<String, Object>> demoPackageCreation() {
         Map<String, Object> demo = new HashMap<>();
