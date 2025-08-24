@@ -52,12 +52,21 @@ public class SecurityConfig {
                 .requestMatchers("/").permitAll() // Root healthcheck for Railway
                 .requestMatchers("/health").permitAll() // Health endpoint for monitoring
                 
-                // PUBLIC ENDPOINTS - Không cần đăng nhập
-                .requestMatchers("/api/package-plans/**").permitAll() // View packages - PUBLIC
-                .requestMatchers("/api/packages/**").permitAll() // View packages - PUBLIC
-                .requestMatchers("/api/centers/**").permitAll() // View centers - PUBLIC
-                .requestMatchers("/api/service-types/**").permitAll() // View service types - PUBLIC
-                .requestMatchers("/api/time-frames/**").permitAll() // View time frames - PUBLIC
+                // PUBLIC ENDPOINTS - Không cần đăng nhập (chỉ xem)
+                .requestMatchers(HttpMethod.GET, "/api/package-plans/**").permitAll() // View packages - PUBLIC
+                .requestMatchers(HttpMethod.GET, "/api/package-plan-details/**").permitAll() // View package details - PUBLIC
+                .requestMatchers(HttpMethod.GET, "/api/packages/**").permitAll() // View packages - PUBLIC
+                .requestMatchers(HttpMethod.GET, "/api/centers/**").permitAll() // View centers - PUBLIC
+                .requestMatchers(HttpMethod.GET, "/api/service-types/**").permitAll() // View service types - PUBLIC
+                .requestMatchers(HttpMethod.GET, "/api/time-frames/**").permitAll() // View time frames - PUBLIC
+                
+                // STAFF ENDPOINTS - Chỉ STAFF mới được tạo/sửa/xóa
+                .requestMatchers(HttpMethod.POST, "/api/package-plans/**").hasRole("STAFF") // Create packages - STAFF ONLY
+                .requestMatchers(HttpMethod.PUT, "/api/package-plans/**").hasRole("STAFF") // Update packages - STAFF ONLY
+                .requestMatchers(HttpMethod.DELETE, "/api/package-plans/**").hasRole("STAFF") // Delete packages - STAFF ONLY
+                .requestMatchers(HttpMethod.POST, "/api/package-plan-details/**").hasRole("STAFF") // Create package details - STAFF ONLY
+                .requestMatchers(HttpMethod.PUT, "/api/package-plan-details/**").hasRole("STAFF") // Update package details - STAFF ONLY
+                .requestMatchers(HttpMethod.DELETE, "/api/package-plan-details/**").hasRole("STAFF") // Delete package details - STAFF ONLY
                 
                 // PROTECTED ENDPOINTS - Cần đăng nhập
                 .requestMatchers("/api/users/**").authenticated() // User management - PROTECTED

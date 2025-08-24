@@ -26,7 +26,7 @@ public class SwaggerConfig {
                                 .name("Gym Bowling Team")
                                 .email("support@gymbowling.com")))
                 .servers(List.of(
-                    new Server().url("https://ae332185633a.ngrok-free.app").description("Ngrok HTTPS Server - CURRENT"),
+                    new Server().url("https://d30235c2a681.ngrok-free.app").description("Ngrok HTTPS Server - CURRENT"),
                     new Server().url("http://localhost:8080").description("Local Development Server")
                 ))
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))

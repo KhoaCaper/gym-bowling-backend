@@ -50,22 +50,34 @@ public class HealthController {
                 dbStatus = "unavailable";
             }
 
+            // Get current environment from Spring profiles
+            String currentProfile = System.getProperty("spring.profiles.active");
+            if (currentProfile == null) {
+                currentProfile = "unknown";
+            }
+            
             return ResponseEntity.ok(Map.of(
                 "status", "UP",
                 "service", "gym-bowling-backend",
                 "version", "1.0.0",
                 "timestamp", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                "environment", "local",
+                "environment", currentProfile,
                 "database", dbStatus,
                 "message", "Service is running"
             ));
         } catch (Exception e) {
+            // Get current environment from Spring profiles
+            String currentProfile = System.getProperty("spring.profiles.active");
+            if (currentProfile == null) {
+                currentProfile = "unknown";
+            }
+            
             return ResponseEntity.ok(Map.of(
                 "status", "UP",
                 "service", "gym-bowling-backend",
                 "version", "1.0.0",
                 "timestamp", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                "environment", "local",
+                "environment", currentProfile,
                 "database", "error",
                 "error", e.getMessage(),
                 "message", "Service is running but health check failed"

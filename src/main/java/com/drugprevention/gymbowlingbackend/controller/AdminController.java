@@ -27,7 +27,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/admin")
 @Tag(name = "Admin Management", description = "Administrative endpoints for user and role management")
-@CrossOrigin(origins = "*")
 public class AdminController {
 
     private final UserService userService;

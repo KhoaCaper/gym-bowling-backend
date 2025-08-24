@@ -26,7 +26,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/auth")
 @Tag(name = "Authentication", description = "User authentication and registration endpoints")
-@CrossOrigin(origins = "*")
 public class AuthController {
 
     private final UserService userService;

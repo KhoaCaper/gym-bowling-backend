@@ -25,11 +25,14 @@ public class FirebaseConfig {
     @Value("${GOOGLE_APPLICATION_CREDENTIALS_JSON:}")
     private String firebaseCredentialsJson;
 
+    @Value("${firebase.enabled:false}")
+    private boolean firebaseEnabled;
+
     @PostConstruct
     public void initialize() {
         // Only initialize if Firebase is explicitly enabled
         if (!isFirebaseEnabled()) {
-            System.out.println("Firebase is disabled in production environment. Skipping initialization.");
+            System.out.println("Firebase is disabled. Skipping initialization.");
             return;
         }
         
@@ -42,14 +45,14 @@ public class FirebaseConfig {
                 credentials = GoogleCredentials.fromStream(credentialsStream);
                 System.out.println("Firebase initialized from environment variable");
             }
-            // Fallback to file (for local development) - ONLY if not in Railway environment
-            else if (firebaseConfigFile != null && !firebaseConfigFile.trim().isEmpty() && !isRailwayEnvironment()) {
+            // Fallback to file (for local development)
+            else if (firebaseConfigFile != null && !firebaseConfigFile.trim().isEmpty()) {
                 try {
                     InputStream serviceAccount = new ClassPathResource(firebaseConfigFile).getInputStream();
                     credentials = GoogleCredentials.fromStream(serviceAccount);
                     System.out.println("Firebase initialized from config file: " + firebaseConfigFile);
                 } catch (Exception e) {
-                    System.out.println("Local Firebase config file not found, skipping: " + e.getMessage());
+                    System.err.println("Firebase config file not found: " + e.getMessage());
                 }
             }
             
@@ -60,31 +63,25 @@ public class FirebaseConfig {
 
                 if (FirebaseApp.getApps().isEmpty()) {
                     FirebaseApp.initializeApp(options);
+                    System.out.println("Firebase app initialized successfully");
                 }
             } else {
-                System.out.println("No Firebase credentials found. Skipping Firebase initialization.");
+                System.err.println("No Firebase credentials found. Firebase initialization failed.");
             }
             
         } catch (IOException e) {
             System.err.println("Failed to initialize Firebase: " + e.getMessage());
-            // For development, continue without Firebase if config file not found
         }
-    }
-    
-    private boolean isRailwayEnvironment() {
-        // Check if we're running on Railway
-        String port = System.getenv("PORT");
-        String railwayProjectId = System.getenv("RAILWAY_PROJECT_ID");
-        return port != null || railwayProjectId != null;
     }
     
     private boolean isFirebaseEnabled() {
-        // Check if Firebase is explicitly enabled
-        String firebaseEnabled = System.getenv("FIREBASE_ENABLED");
-        if (firebaseEnabled != null) {
-            return "true".equalsIgnoreCase(firebaseEnabled);
+        // Check both environment variable and properties file
+        String envFirebaseEnabled = System.getenv("FIREBASE_ENABLED");
+        if (envFirebaseEnabled != null) {
+            return "true".equalsIgnoreCase(envFirebaseEnabled);
         }
-        return false; // Default to disabled in production
+        // Use the value from properties file
+        return firebaseEnabled;
     }
 
     @Bean

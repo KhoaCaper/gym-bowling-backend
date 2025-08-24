@@ -1,0 +1,34 @@
+# NGROK CONFIGURATION FOR LOCAL TESTING
+# Generated: $(Get-Date)
+
+## NGROK URL:
+https://98e5ee4b3304.ngrok-free.app
+
+## TESTING ENDPOINTS:
+
+### Health Check:
+- https://98e5ee4b3304.ngrok-free.app/
+- https://98e5ee4b3304.ngrok-free.app/health
+- https://98e5ee4b3304.ngrok-free.app/ping
+- https://98e5ee4b3304.ngrok-free.app/test
+
+### Swagger UI:
+- https://98e5ee4b3304.ngrok-free.app/swagger-ui.html
+
+### API Documentation:
+- https://98e5ee4b3304.ngrok-free.app/api-docs
+
+### VNPay Return URL:
+- https://98e5ee4b3304.ngrok-free.app/api/payment/vnpay-return
+
+## FOR FRONTEND TEAM:
+- Use this URL to test APIs
+- All endpoints are accessible via ngrok
+- Database: SQL Server (local)
+- Firebase: Enabled
+- JWT: Local development secret
+
+## NOTES:
+- URL changes each time ngrok restarts
+- Update this file when ngrok URL changes
+- Local development only - not for production

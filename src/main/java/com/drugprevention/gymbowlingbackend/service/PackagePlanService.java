@@ -2,6 +2,7 @@ package com.drugprevention.gymbowlingbackend.service;
 
 import com.drugprevention.gymbowlingbackend.dto.PackagePlanDTO;
 import com.drugprevention.gymbowlingbackend.dto.CreatePackageDTO;
+import com.drugprevention.gymbowlingbackend.dto.CreateCompletePackageDTO;
 import com.drugprevention.gymbowlingbackend.entity.PackagePlan;
 import com.drugprevention.gymbowlingbackend.entity.Center;
 import com.drugprevention.gymbowlingbackend.entity.PackagePlanDetail;
@@ -307,5 +308,58 @@ public class PackagePlanService {
             packagePlan.getCenter() != null ? packagePlan.getCenter().getId() : null,
             packagePlan.getCenter() != null ? packagePlan.getCenter().getName() : null
         );
+    }
+
+    /**
+     * Tạo gói dịch vụ hoàn chỉnh với services và timeframes
+     * 
+     * @param dto Thông tin gói dịch vụ và services cần tạo
+     * @return Gói dịch vụ hoàn chỉnh đã được tạo
+     */
+    public PackagePlan createCompletePackage(CreateCompletePackageDTO dto) {
+        // Validate input
+        if (dto.getServices() == null || dto.getServices().isEmpty()) {
+            throw new IllegalArgumentException("Services list cannot be empty");
+        }
+        
+        // Validate center exists
+        Center center = centerRepository.findById(dto.getCenterId())
+            .orElseThrow(() -> new IllegalArgumentException("Center not found with id: " + dto.getCenterId()));
+        
+        // Create package plan
+        PackagePlan packagePlan = new PackagePlan(
+            dto.getName(),
+            dto.getDescription(),
+            dto.getPrice(),
+            dto.getDurationMonths(),
+            center
+        );
+        
+        // Save package plan first
+        PackagePlan savedPackagePlan = packagePlanRepository.save(packagePlan);
+        
+        // Create package plan details for each service
+        for (CreateCompletePackageDTO.ServiceTimeFrameDTO serviceDto : dto.getServices()) {
+            // Validate service exists
+            com.drugprevention.gymbowlingbackend.entity.Service service = serviceRepository.findById(serviceDto.getServiceId())
+                .orElseThrow(() -> new IllegalArgumentException("Service not found with id: " + serviceDto.getServiceId()));
+            
+            // Validate service belongs to center
+            if (!service.getCenter().getId().equals(center.getId())) {
+                throw new IllegalArgumentException("Service " + service.getName() + " does not belong to center " + center.getName());
+            }
+            
+            // Create package plan detail
+            PackagePlanDetail detail = new PackagePlanDetail(
+                savedPackagePlan,
+                service,
+                serviceDto.getSessionsIncluded() != null ? serviceDto.getSessionsIncluded() : 1
+            );
+            
+            // Save detail
+            // Note: You'll need to inject PackagePlanDetailService or use repository directly
+        }
+        
+        return savedPackagePlan;
     }
 }

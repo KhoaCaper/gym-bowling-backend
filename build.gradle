@@ -26,9 +26,6 @@ dependencies {
     // SQL Server
     runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
     
-    // PostgreSQL (for Railway)
-    runtimeOnly 'org.postgresql:postgresql'
-    
     // Firebase Admin SDK
     implementation 'com.google.firebase:firebase-admin:9.2.0'
     
@@ -50,4 +47,15 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+// Ensure JAR file is created for deployment
+jar {
+    enabled = false
+    archiveClassifier = ''
+}
+
+// Create executable JAR
+bootJar {
+    archiveFileName = 'gym-bowling-backend.jar'
 }

@@ -28,7 +28,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/firebase-auth")
 @Tag(name = "Firebase Authentication", description = "Google Firebase authentication endpoints")
-@CrossOrigin(origins = "*")
 public class FirebaseAuthController {
 
     private final UserService userService;

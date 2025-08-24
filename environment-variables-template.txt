@@ -1,0 +1,39 @@
+# ========================================
+# ENVIRONMENT VARIABLES FOR PRODUCTION
+# ========================================
+# Copy these variables to your deployment platform
+# Replace the values with your actual production values
+
+# Database Configuration
+DATABASE_URL=jdbc:sqlserver://your-server:1433;databaseName=gym_bowling;encrypt=true;trustServerCertificate=true
+DATABASE_USERNAME=your_username
+DATABASE_PASSWORD=your_secure_password
+
+# Firebase Configuration
+FIREBASE_CONFIG_FILE=firebase-service-account.json
+FIREBASE_ENABLED=true
+
+# VNPay Configuration (Production)
+VNPAY_TMN_CODE=your_production_tmn_code
+VNPAY_HASH_SECRET=your_production_hash_secret
+VNPAY_PAY_URL=https://pay.vnpay.vn/paymentv2/vpcpay.html
+VNPAY_RETURN_URL=https://your-domain.com/api/payment/vnpay-return
+
+# JWT Configuration
+JWT_SECRET=your_very_long_and_secure_jwt_secret_key_for_production
+JWT_EXPIRATION=86400000
+
+# Server Configuration
+PORT=8080
+
+# Spring Profile (Optional - will be auto-detected)
+SPRING_PROFILES_ACTIVE=prod
+
+# ========================================
+# NOTES:
+# ========================================
+# 1. DATABASE_URL: Use your production SQL Server connection string
+# 2. JWT_SECRET: Generate a strong, random secret (at least 32 characters)
+# 3. VNPAY_*: Use production VNPay credentials, not sandbox
+# 4. PORT: Most cloud platforms will set this automatically
+# 5. FIREBASE_CONFIG_FILE: Ensure this file is available in your deployment

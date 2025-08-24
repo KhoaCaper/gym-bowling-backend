@@ -1,6 +1,7 @@
 package com.drugprevention.gymbowlingbackend.service;
 
 import com.drugprevention.gymbowlingbackend.dto.CreatePackageDetailDTO;
+import com.drugprevention.gymbowlingbackend.dto.PackagePlanDetailDTO;
 import com.drugprevention.gymbowlingbackend.entity.PackagePlan;
 import com.drugprevention.gymbowlingbackend.entity.PackagePlanDetail;
 import com.drugprevention.gymbowlingbackend.repository.PackagePlanDetailRepository;
@@ -115,5 +116,52 @@ public class PackagePlanDetailService {
     // Delete all details for a service
     public void deleteAllByService(Long serviceId) {
         packagePlanDetailRepository.deleteByServiceId(serviceId);
+    }
+    
+    /**
+     * Convert PackagePlanDetail entity to DTO
+     */
+    private PackagePlanDetailDTO convertToDTO(PackagePlanDetail detail) {
+        return new PackagePlanDetailDTO(
+            detail.getId(),
+            detail.getPackagePlan() != null ? detail.getPackagePlan().getId() : null,
+            detail.getPackagePlan() != null ? detail.getPackagePlan().getName() : null,
+            detail.getService() != null ? detail.getService().getId() : null,
+            detail.getService() != null ? detail.getService().getName() : null,
+            detail.getService() != null ? detail.getService().getDescription() : null,
+            detail.getService() != null && detail.getService().getCenter() != null ? detail.getService().getCenter().getId() : null,
+            detail.getService() != null && detail.getService().getCenter() != null ? detail.getService().getCenter().getName() : null,
+            detail.getSessionsIncluded(),
+            detail.getCreatedAt(),
+            null // updatedAt không có trong entity
+        );
+    }
+    
+    /**
+     * Get package plan detail by id as DTO
+     */
+    public Optional<PackagePlanDetailDTO> getByIdAsDTO(Long id) {
+        Optional<PackagePlanDetail> detail = getById(id);
+        return detail.map(this::convertToDTO);
+    }
+    
+    /**
+     * Get all package plan details as DTOs
+     */
+    public List<PackagePlanDetailDTO> getAllPackagePlanDetailsAsDTOs() {
+        List<PackagePlanDetail> details = getAllPackagePlanDetails();
+        return details.stream()
+            .map(this::convertToDTO)
+            .collect(java.util.stream.Collectors.toList());
+    }
+    
+    /**
+     * Get details by package plan as DTOs
+     */
+    public List<PackagePlanDetailDTO> getDetailsByPackagePlanAsDTOs(Long packagePlanId) {
+        List<PackagePlanDetail> details = getDetailsByPackagePlan(packagePlanId);
+        return details.stream()
+            .map(this::convertToDTO)
+            .collect(java.util.stream.Collectors.toList());
     }
 }
