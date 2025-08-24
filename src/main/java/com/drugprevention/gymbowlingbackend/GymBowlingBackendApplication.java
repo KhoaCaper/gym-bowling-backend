@@ -7,22 +7,19 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class GymBowlingBackendApplication {
 
     public static void main(String[] args) {
-        // Check environment to determine profile
+        // Check environment to determine profile - PRIORITIZE RAILWAY
         String env = System.getenv("SPRING_PROFILES_ACTIVE");
-        String renderEnv = System.getenv("RENDER");
+        String railwayEnv = System.getenv("RAILWAY_ENVIRONMENT");
+        String port = System.getenv("PORT");
         
-        if (renderEnv != null && renderEnv.equals("true")) {
-            // Running on Render - use prod profile
-            System.setProperty("spring.profiles.active", "prod");
-            System.out.println("🚀 Running in RENDER production mode");
+        if (railwayEnv != null || (port != null && !port.isEmpty())) {
+            // Running on Railway - use railway profile
+            System.setProperty("spring.profiles.active", "railway");
+            System.out.println("🚂 Running in RAILWAY mode (PORT=" + port + ", ENV=" + railwayEnv + ")");
         } else if (env != null && !env.isEmpty()) {
             // Profile specified via environment variable
             System.setProperty("spring.profiles.active", env);
             System.out.println("⚙️ Running with profile: " + env);
-        } else if (System.getenv("PORT") != null) {
-            // Railway/Render production - use railway profile
-            System.setProperty("spring.profiles.active", "railway");
-            System.out.println("🚂 Running in RAILWAY/RENDER mode (PORT=" + System.getenv("PORT") + ")");
         } else {
             // Local development - use local profile
             System.setProperty("spring.profiles.active", "local");
